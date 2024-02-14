@@ -13,6 +13,9 @@ import { dbdatasource } from 'db/data.source';
 import { RolesGuard } from './auth/roles.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
+import { LocationModule } from './location/location.module';
+import { CategoryModule } from './category/category.module';
+import { PackageModule } from './package/package.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { ConfigModule } from '@nestjs/config';
     MenuModule,
     MealModule,
     AuthModule,
+    LocationModule,
+    CategoryModule,
+    PackageModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
