@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { SelectedMealDetailModule } from './selected_meal_detail/selected_meal_detail.module';
+import { SelectedMealDetailModule } from './order_detail/selected_meal_detail.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { OrderModule } from './order/order.module';
 import { MenuModule } from './menu/menu.module';
@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocationModule } from './location/location.module';
 import { CategoryModule } from './category/category.module';
 import { PackageModule } from './package/package.module';
+import { OrderDetailModule } from './order-detail/order-detail.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PackageModule } from './package/package.module';
     LocationModule,
     CategoryModule,
     PackageModule,
+    OrderDetailModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
