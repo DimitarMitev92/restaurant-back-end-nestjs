@@ -8,10 +8,27 @@ import { OrderModule } from './order/order.module';
 import { MenuModule } from './menu/menu.module';
 import { MealModule } from './meal/meal.module';
 import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dbdatasource } from 'db/data.source';
+import { RolesGuard } from './auth/roles.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, SelectedMealDetailModule, RestaurantModule, OrderModule, MenuModule, MealModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRoot(dbdatasource),
+    UserModule,
+    SelectedMealDetailModule,
+    RestaurantModule,
+    OrderModule,
+    MenuModule,
+    MealModule,
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
 })
 export class AppModule {}
