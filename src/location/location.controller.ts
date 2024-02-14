@@ -1,34 +1,69 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
+import { NotFoundException } from '@nestjs/common';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRights } from 'src/user/entities/user.entity';
+import { Public } from 'src/auth/public.decorator';
 
 @Controller('location')
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
-  @Post()
-  create(@Body() createLocationDto: CreateLocationDto) {
-    return this.locationService.create(createLocationDto);
+  @Roles([UserRights.ADMIN])
+  @Post('/create')
+  async create(@Body() createLocationDto: CreateLocationDto) {
+    const location = await this.locationService.create(createLocationDto);
+    return location;
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.locationService.findAll();
+  findAll(@Query('name') name: string) {
+    return this.locationService.findAll(name);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.locationService.findOne(+id);
+  @Public()
+  @Get('/:id')
+  async findOne(@Param('id') id: string) {
+    const location = await this.locationService.findOne(id);
+    if (!location) {
+      throw new NotFoundException('Location not found');
+    }
+    return location;
   }
 
+  @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLocationDto: UpdateLocationDto) {
-    return this.locationService.update(+id, updateLocationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateLocationDto: UpdateLocationDto,
+  ) {
+    return this.locationService.update(id, updateLocationDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.locationService.remove(+id);
+  @Roles([UserRights.ADMIN])
+  @Delete(':id/soft')
+  removeSoft(@Param('id', ParseUUIDPipe) id: string) {
+    console.log(`Attempting soft removal for location with id:${id}`);
+    return this.locationService.removeSoft(id);
+  }
+
+  @Roles([UserRights.ADMIN])
+  @Delete(':id/permanent')
+  removePermanent(@Param('id', ParseUUIDPipe) id: string) {
+    console.log(`Attempting permanent removal for location with id :${id}`);
+    return this.locationService.removePermanent(id);
   }
 }
