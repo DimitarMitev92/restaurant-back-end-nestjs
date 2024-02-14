@@ -15,7 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { LocationModule } from './location/location.module';
 import { CategoryModule } from './category/category.module';
-import { PackageModule } from './package/package.module';
+import { PackegeModule } from './packege/packege.module';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { PackageModule } from './package/package.module';
     AuthModule,
     LocationModule,
     CategoryModule,
-    PackageModule,
+    PackegeModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
