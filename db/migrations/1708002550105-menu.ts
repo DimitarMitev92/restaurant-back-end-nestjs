@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Type } from 'src/menu/entities/menu.entity';
 
-export class Menu1708002175436 implements MigrationInterface {
+export class Menu1708002550105 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
