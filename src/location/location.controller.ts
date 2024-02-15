@@ -21,7 +21,7 @@ import { Public } from 'src/auth/public.decorator';
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
-  @Roles([UserRights.ADMIN])
+  @Public()
   @Post('/create')
   async create(@Body() createLocationDto: CreateLocationDto) {
     const location = await this.locationService.create(createLocationDto);
@@ -44,7 +44,7 @@ export class LocationController {
     return location;
   }
 
-  @Roles([UserRights.ADMIN, UserRights.CLIENT])
+  @Public()
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -53,14 +53,14 @@ export class LocationController {
     return this.locationService.update(id, updateLocationDto);
   }
 
-  @Roles([UserRights.ADMIN])
+  @Public()
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting soft removal for location with id:${id}`);
     return this.locationService.removeSoft(id);
   }
 
-  @Roles([UserRights.ADMIN])
+  @Public()
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting permanent removal for location with id :${id}`);
