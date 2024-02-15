@@ -4,6 +4,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Public } from './public.decorator';
 
 import { LoggingUser } from './auth.service';
+import { SignInDto } from 'src/user/dto/sign-in.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +14,7 @@ export class AuthController {
   @Public()
   @Post('sign-in')
   signIn(
-    @Body() signInDto: CreateUserDto,
+    @Body() signInDto: SignInDto,
   ): Promise<{ user: LoggingUser; access_token: string }> {
     return this.authService.signIn(signInDto.email, signInDto.password);
   }
