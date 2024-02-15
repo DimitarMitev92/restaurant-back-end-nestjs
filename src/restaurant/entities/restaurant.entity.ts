@@ -3,21 +3,34 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('restaurant')
+@Entity()
 export class Restaurant {
   @PrimaryGeneratedColumn('uuid')
-  readonly id: string;
+  id: string;
 
-  @Column({ type: 'varchar', nullable: false })
-  readonly name: string;
+  @Column()
+  name: string;
 
-  @Column({ name: 'location_id', type: 'uuid', nullable: false })
-  readonly locationId: string;
+  @Column({ name: 'location_id' })
+  locationId: string;
+
+  @Column({
+    name: 'open_hour',
+    type: 'time',
+    precision: 0,
+  })
+  openHour: string;
+
+  @Column({
+    name: 'close_hour',
+    type: 'time',
+    precision: 0,
+  })
+  closeHour: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -25,9 +38,6 @@ export class Restaurant {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
+  @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date;
-
-  @JoinColumn({ name: 'location_id' })
-  location: Location;
 }
