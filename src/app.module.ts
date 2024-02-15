@@ -15,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LocationModule } from './location/location.module';
 import { CategoryModule } from './category/category.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
+import { PackageModule } from './package/package.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OrderDetailModule } from './order-detail/order-detail.module';
     LocationModule,
     CategoryModule,
     OrderDetailModule,
+    PackageModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
