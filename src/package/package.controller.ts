@@ -1,34 +1,63 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { PackageService } from './package.service';
 import { CreatePackageDto } from './dto/create-package.dto';
 import { UpdatePackageDto } from './dto/update-package.dto';
-
+import { Public } from 'src/auth/public.decorator';
+import { NotFoundException } from '@nestjs/common';
 @Controller('package')
 export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
-  @Post()
-  create(@Body() createPackageDto: CreatePackageDto) {
-    return this.packageService.create(createPackageDto);
+  @Public()
+  @Post('/create')
+  async create(@Body() createPackageDto: CreatePackageDto) {
+    const pack = await this.packageService.create(createPackageDto);
+    return pack;
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.packageService.findAll();
+  findAll(@Query('type') type: string) {
+    return this.packageService.findAll(type);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.packageService.findOne(+id);
+  @Public()
+  @Get('/:id')
+  async findOne(@Param('id') id: string) {
+    const pack = await this.packageService.findOne(id);
+    if (!pack) {
+      throw new NotFoundException('Pack not found');
+    }
+    return pack;
   }
 
+  @Public()
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePackageDto: UpdatePackageDto) {
-    return this.packageService.update(+id, updatePackageDto);
+    return this.packageService.update(id, updatePackageDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.packageService.remove(+id);
+  @Public()
+  @Delete(':id/soft')
+  removeSoft(@Param('id', ParseUUIDPipe) id: string) {
+    console.log(`Attempting soft removal for package with id:${id}`);
+    return this.packageService.removeSoft(id);
+  }
+
+  @Public()
+  @Delete(':id/permanent')
+  removePermanent(@Param('id', ParseUUIDPipe) id: string) {
+    console.log(`Attempting permanent removal for package with id :${id}`);
+    return this.packageService.removePermanent(id);
   }
 }
