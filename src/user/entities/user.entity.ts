@@ -35,9 +35,9 @@ export class User {
   @IsNotEmpty()
   password: string;
 
-  @Column()
+  @Column({ name: 'location_id' })
   @IsNotEmpty()
-  location: string;
+  locationId: string;
 
   @Column({ type: 'enum', enum: UserRights })
   @IsNotEmpty()
