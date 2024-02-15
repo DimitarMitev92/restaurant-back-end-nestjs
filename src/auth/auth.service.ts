@@ -16,7 +16,7 @@ export interface LoggingUser {
   firstName: string;
   lastName: string;
   email: string;
-  location: string;
+  locationId: string;
   rights: string;
 }
 
@@ -46,7 +46,7 @@ export class AuthService {
       sub: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
-      location: user.location,
+      locationId: user.locationId,
       email: user.email,
       rights: user.rights,
     };
@@ -54,7 +54,7 @@ export class AuthService {
     const loggedUser = {
       firstName: user.firstName,
       lastName: user.lastName,
-      location: user.location,
+      locationId: user.locationId,
       email: user.email,
       rights: user.rights,
     };
@@ -91,14 +91,14 @@ export class AuthService {
       firstName: returnedUserFromBase.firstName,
       lastName: returnedUserFromBase.lastName,
       email: returnedUserFromBase.email,
-      location: returnedUserFromBase.location,
+      locationId: returnedUserFromBase.locationId,
       rights: returnedUserFromBase.rights,
     };
 
     const registeredUser = {
       firstName: returnedUserFromBase.firstName,
       lastName: returnedUserFromBase.lastName,
-      location: returnedUserFromBase.location,
+      locationId: returnedUserFromBase.locationId,
       email: returnedUserFromBase.email,
       rights: returnedUserFromBase.rights,
     };

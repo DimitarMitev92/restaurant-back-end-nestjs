@@ -13,8 +13,6 @@ import { LocationService } from './location.service';
 import { CreateLocationDto } from './dto/create-location.dto';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { NotFoundException } from '@nestjs/common';
-import { Roles } from 'src/auth/roles.decorator';
-import { UserRights } from 'src/user/entities/user.entity';
 import { Public } from 'src/auth/public.decorator';
 
 @Controller('location')

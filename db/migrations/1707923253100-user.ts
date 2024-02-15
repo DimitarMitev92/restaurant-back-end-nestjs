@@ -1,6 +1,12 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+  TableIndex,
+} from 'typeorm';
 
-export class User1707897376129 implements MigrationInterface {
+export class User1707923253100 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
@@ -17,7 +23,7 @@ export class User1707897376129 implements MigrationInterface {
           { name: 'first_name', type: 'varchar', isNullable: false },
           { name: 'last_name', type: 'varchar', isNullable: false },
           { name: 'email', type: 'varchar', isNullable: false, isUnique: true },
-          { name: 'location', type: 'varchar', isNullable: false },
+          { name: 'location_id', type: 'uuid', isNullable: false },
           { name: 'password', type: 'varchar', isNullable: false },
           {
             name: 'rights',
@@ -42,6 +48,55 @@ export class User1707897376129 implements MigrationInterface {
         ],
       }),
       true,
+    );
+
+    await queryRunner.createIndex(
+      'user',
+      new TableIndex({
+        name: 'IDX_USER_FIRST_NAME',
+        columnNames: ['first_name'],
+      }),
+    );
+
+    await queryRunner.createIndex(
+      'user',
+      new TableIndex({
+        name: 'IDX_USER_LAST_NAME',
+        columnNames: ['last_name'],
+      }),
+    );
+
+    await queryRunner.createIndex(
+      'user',
+      new TableIndex({
+        name: 'IDX_USER_EMAIL',
+        columnNames: ['email'],
+      }),
+    );
+
+    await queryRunner.createIndex(
+      'user',
+      new TableIndex({
+        name: 'IDX_USER_PASSWORD',
+        columnNames: ['password'],
+      }),
+    );
+
+    await queryRunner.createForeignKey(
+      'user',
+      new TableForeignKey({
+        columnNames: ['location_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'location',
+      }),
+    );
+
+    await queryRunner.createIndex(
+      'user',
+      new TableIndex({
+        name: 'IDX_USER_RIGHTS',
+        columnNames: ['rights'],
+      }),
     );
   }
 
