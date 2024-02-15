@@ -1,5 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsUUID } from 'class-validator';
-import { UserRights } from '../entities/user.entity';
+import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -18,7 +17,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsUUID()
   readonly locationId: string;
-
-  @IsEnum(UserRights, { message: 'Invalid user rights' })
-  readonly rights: UserRights;
 }

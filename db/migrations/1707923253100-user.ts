@@ -3,7 +3,6 @@ import {
   QueryRunner,
   Table,
   TableForeignKey,
-  TableIndex,
 } from 'typeorm';
 
 export class User1707923253100 implements MigrationInterface {
@@ -50,52 +49,12 @@ export class User1707923253100 implements MigrationInterface {
       true,
     );
 
-    await queryRunner.createIndex(
-      'user',
-      new TableIndex({
-        name: 'IDX_USER_FIRST_NAME',
-        columnNames: ['first_name'],
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'user',
-      new TableIndex({
-        name: 'IDX_USER_LAST_NAME',
-        columnNames: ['last_name'],
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'user',
-      new TableIndex({
-        name: 'IDX_USER_EMAIL',
-        columnNames: ['email'],
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'user',
-      new TableIndex({
-        name: 'IDX_USER_PASSWORD',
-        columnNames: ['password'],
-      }),
-    );
-
     await queryRunner.createForeignKey(
       'user',
       new TableForeignKey({
         columnNames: ['location_id'],
         referencedColumnNames: ['id'],
         referencedTableName: 'location',
-      }),
-    );
-
-    await queryRunner.createIndex(
-      'user',
-      new TableIndex({
-        name: 'IDX_USER_RIGHTS',
-        columnNames: ['rights'],
       }),
     );
   }
