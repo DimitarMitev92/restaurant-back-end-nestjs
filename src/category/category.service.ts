@@ -1,26 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Category } from './entities/category.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CategoryService {
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  constructor(
+    @InjectRepository(Category) private categoryRepo: Repository<Category>,
+  ) {}
+
+  async create(createCategoryDto: CreateCategoryDto) {
+    const existingCategory = await this.categoryRepo.findOne({
+      where: { type: createCategoryDto.type },
+    });
+
+    if (existingCategory) {
+      throw new BadRequestException('Category with this type already exists');
+    }
+
+    const newCategory = this.categoryRepo.create(createCategoryDto);
+    return this.categoryRepo.save(newCategory);
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(type: string) {
+    return this.categoryRepo.find({ where: { type } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string): Promise<Category> {
+    const category = await this.categoryRepo.findOneBy({ id });
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    return category;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    const category = await this.findOne(id);
+
+    if (!category) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    const updatedCategory = { ...category, ...updateCategoryDto };
+
+    return this.categoryRepo.save(updatedCategory);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async removeSoft(id: string) {
+    const category = await this.findOne(id);
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    await this.categoryRepo.softRemove(category);
+    return {
+      success: true,
+      message: `Soft delete category successful with id ${id}`,
+    };
+  }
+
+  async removePermanent(id: string) {
+    const category = await this.findOne(id);
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    await this.categoryRepo.remove(category);
+    return {
+      success: true,
+      message: `Permanent delete category successful with id ${id}`,
+    };
   }
 }
