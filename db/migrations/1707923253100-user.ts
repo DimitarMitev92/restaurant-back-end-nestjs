@@ -6,7 +6,7 @@ import {
   TableIndex,
 } from 'typeorm';
 
-export class User1707897376129 implements MigrationInterface {
+export class User1707923253100 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
@@ -83,7 +83,7 @@ export class User1707897376129 implements MigrationInterface {
     );
 
     await queryRunner.createForeignKey(
-      'location',
+      'user',
       new TableForeignKey({
         columnNames: ['location_id'],
         referencedColumnNames: ['id'],
@@ -92,7 +92,7 @@ export class User1707897376129 implements MigrationInterface {
     );
 
     await queryRunner.createIndex(
-      'rights',
+      'user',
       new TableIndex({
         name: 'IDX_USER_RIGHTS',
         columnNames: ['rights'],
