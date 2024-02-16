@@ -16,10 +16,6 @@ export class OrderDetailService {
     return this.repo.save(orderDetail);
   }
 
-  findAll() {
-    return this.repo.find();
-  }
-
   findOne(id: string) {
     return this.repo.findOneBy({ id: id });
   }

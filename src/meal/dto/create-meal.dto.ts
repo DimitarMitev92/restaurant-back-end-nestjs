@@ -3,27 +3,27 @@ import {
   IsNotEmpty,
   IsUUID,
   IsOptional,
-  ValidatorConstraint,
   ValidatorConstraintInterface,
   Validate,
   Min,
+  ValidatorConstraint,
 } from 'class-validator';
 
-@ValidatorConstraint({ name: 'CustomDate', async: false })
-export class CustomDateValidator implements ValidatorConstraintInterface {
-  validate(text: string) {
-    const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-    if (!dateRegex.test(text)) return false;
+// @ValidatorConstraint({ name: 'CustomDate', async: false })
+// export class CustomDateValidator implements ValidatorConstraintInterface {
+//   validate(text: string) {
+//     const dateRegex = /^(\d{4})\-(\d{2})\-(\d{2})$/;
+//     if (!dateRegex.test(text)) return false;
 
-    const [_, day, month, year] = text.match(dateRegex);
-    const date = new Date(`${year}-${month}-${day}`);
-    return !isNaN(date.getTime());
-  }
+//     const [_, day, month, year] = text.match(dateRegex);
+//     const date = new Date(`${year}-${month}-${day}`);
+//     return !isNaN(date.getTime());
+//   }
 
-  defaultMessage() {
-    return 'Date must be in DD.MM.YYYY format';
-  }
-}
+//   defaultMessage() {
+//     return 'Date must be in DD.MM.YYYY format';
+//   }
+// }
 
 @ValidatorConstraint({ name: 'customTimeValidation', async: false })
 class CustomTimeValidation implements ValidatorConstraintInterface {
@@ -51,11 +51,9 @@ export class CreateMealDto {
   @IsOptional()
   additionalNote: string;
 
-  @Validate(CustomDateValidator)
   @IsNotEmpty()
   startDate: string;
 
-  @Validate(CustomDateValidator)
   @IsNotEmpty()
   endDate: string;
 
