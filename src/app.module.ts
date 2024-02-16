@@ -16,6 +16,8 @@ import { LocationModule } from './location/location.module';
 import { CategoryModule } from './category/category.module';
 import { OrderDetailModule } from './order-detail/order-detail.module';
 import { PackageModule } from './package/package.module';
+import { AwsController } from './aws/aws.controller';
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -33,8 +35,9 @@ import { PackageModule } from './package/package.module';
     CategoryModule,
     OrderDetailModule,
     PackageModule,
+    AwsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AwsController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
 })
 export class AppModule {}
