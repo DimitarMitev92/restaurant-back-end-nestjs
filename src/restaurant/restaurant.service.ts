@@ -17,12 +17,12 @@ export class RestaurantService {
   ) {}
 
   async create(createRestaurantDto: CreateRestaurantDto) {
-    const existingCategory = await this.restaurantRepo.findOne({
+    const existingRestaurant = await this.restaurantRepo.findOne({
       where: { name: createRestaurantDto.name },
     });
 
-    if (existingCategory) {
-      throw new BadRequestException('Restaurant with this type already exists');
+    if (existingRestaurant) {
+      throw new BadRequestException('Restaurant with this name already exists');
     }
 
     const newRestaurant = this.restaurantRepo.create(createRestaurantDto);
