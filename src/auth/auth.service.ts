@@ -107,4 +107,49 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+  async changePassword({
+    email,
+    oldPassword,
+    newPassword,
+  }): Promise<{ user: LoggingUser; access_token: string }> {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const match = await bcrypt.compare(oldPassword, user.password);
+    if (!match) {
+      throw new UnauthorizedException();
+    }
+
+    const saltRound = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRound);
+    const userData = {
+      ...user,
+      password: hashedPassword,
+    };
+
+    const returnedUserFromBase = await this.userService.update(
+      user.id,
+      userData,
+    );
+
+    const loggedUser = {
+      firstName: returnedUserFromBase.firstName,
+      lastName: returnedUserFromBase.lastName,
+      email: returnedUserFromBase.email,
+      locationId: returnedUserFromBase.locationId,
+      rights: returnedUserFromBase.rights,
+    };
+
+    const payload = {
+      ...loggedUser,
+      sub: returnedUserFromBase.id,
+    };
+
+    return {
+      user: loggedUser,
+      access_token: await this.jwtService.signAsync(payload),
+    };
+  }
 }
