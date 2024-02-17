@@ -23,10 +23,10 @@ export class Meal {
   @Column({ name: 'additional_note' })
   additionalNote: string;
 
-  @Column({ name: 'start_date', type: 'date' })
+  @CreateDateColumn({ name: 'start_date' })
   startDate: Date;
 
-  @Column({ name: 'end_date', type: 'date' })
+  @CreateDateColumn({ name: 'end_date' })
   endDate: Date;
 
   @Column({ name: 'start_hour', type: 'time' })

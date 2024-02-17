@@ -20,7 +20,15 @@ export class MealService {
     private readonly packageService: PackageService,
   ) {}
   async create(createMealDto: CreateMealDto) {
-    const { menuId, categoryId, packageId, startHour, endHour } = createMealDto;
+    const {
+      menuId,
+      categoryId,
+      packageId,
+      startHour,
+      endHour,
+      startDate,
+      endDate,
+    } = createMealDto;
 
     const menuExists = await this.menuService.findOne(menuId);
     if (!menuExists) {
@@ -51,17 +59,9 @@ export class MealService {
       );
     }
 
-    const startDate = new Date(
-      createMealDto.startDate.split('.').reverse().join('-'),
-    );
-    const endDate = new Date(
-      createMealDto.endDate.split('.').reverse().join('-'),
-    );
-
-    if (startDate >= endDate) {
-      throw new BadRequestException('Start date must be before end date');
+    if (startDate > endDate) {
+      throw new BadRequestException('Start date must be on or before end date');
     }
-
     const startHourMinutes = this.convertTimeToMinutes(startHour);
     const endHourMinutes = this.convertTimeToMinutes(endHour);
 
