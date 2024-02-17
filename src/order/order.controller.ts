@@ -13,6 +13,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Public } from 'src/auth/public.decorator';
+import { CreateOrderDetailDto } from 'src/order-detail/dto/create-order-detail.dto';
 
 @Controller('order')
 export class OrderController {
@@ -20,9 +21,15 @@ export class OrderController {
 
   @Public()
   @Post('/create')
-  async create(@Body() createOrderDto: CreateOrderDto) {
-    const order = await this.orderService.create(createOrderDto);
-    return order;
+  async create(
+    @Body()
+    body: {
+      createOrderDto: CreateOrderDto;
+      createOrderDetailDto: CreateOrderDetailDto;
+    },
+  ) {
+    const { createOrderDto, createOrderDetailDto } = body;
+    return await this.orderService.create(createOrderDto, createOrderDetailDto);
   }
 
   @Public()
