@@ -10,7 +10,7 @@ export class CreateMenuDto {
   @IsString()
   @IsOptional()
   @IsEnum(Type)
-  type: string;
+  type?: string;
   @IsNotEmpty()
   @IsUUID()
   restaurantId: string;
