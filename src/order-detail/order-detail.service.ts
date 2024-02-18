@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
+import {
+  CreateOrderDetailDto,
+  MealDetailDto,
+} from './dto/create-order-detail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDetail } from './entities/order-detail.entity';
 import { Repository } from 'typeorm';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
-
 @Injectable()
 export class OrderDetailService {
   constructor(
@@ -12,9 +14,18 @@ export class OrderDetailService {
     private readonly orderDetailRepository: Repository<OrderDetail>,
   ) {}
 
-  async create(createOrderDetailDto: CreateOrderDetailDto) {
-    const orderDetail = this.orderDetailRepository.create(createOrderDetailDto);
-    return await this.orderDetailRepository.save(orderDetail);
+  async create(createOrderDetailDto: CreateOrderDetailDto, orderId: string) {
+    const orderDetails = createOrderDetailDto.meals.map(
+      (mealDetail: MealDetailDto) => {
+        return this.orderDetailRepository.create({
+          orderId: orderId,
+          mealId: mealDetail.mealId,
+          count: mealDetail.count,
+        });
+      },
+    );
+
+    return await this.orderDetailRepository.save(orderDetails);
   }
 
   async findOne(id: string): Promise<OrderDetail> {
@@ -72,5 +83,11 @@ export class OrderDetailService {
       success: true,
       message: `Permanent delete order details successful with id ${id}`,
     };
+  }
+
+  async findOrderDetailsByOrderId(orderId: string): Promise<OrderDetail[]> {
+    return await this.orderDetailRepository.find({
+      where: { orderId: orderId },
+    });
   }
 }

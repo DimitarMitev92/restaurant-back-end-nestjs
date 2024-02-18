@@ -126,6 +126,33 @@ export class MealService {
     };
   }
 
+  async getMealPriceById(mealId: string) {
+    const meal = await this.mealRepo.findOne({ where: { id: mealId } });
+    if (!meal) {
+      throw new NotFoundException(`Meal with ID ${mealId} not found`);
+    }
+    let packagePrice = 0;
+
+    if (meal.packageId) {
+      packagePrice = await this.packageService.getPackagePriceById(
+        meal.packageId,
+      );
+    }
+    return meal.price + packagePrice;
+  }
+
+  async allMealsFromSameRestaurant(mealIds: string[], restaurantId: string) {
+    const queryBuilder = this.mealRepo.createQueryBuilder('meal');
+
+    queryBuilder
+      .leftJoin('menu', 'menu', 'meal.menu_id = menu.id')
+      .where('meal.id IN (:...mealIds)', { mealIds })
+      .andWhere('menu.restaurantId = :restaurantId', { restaurantId });
+
+    const count = await queryBuilder.getCount();
+    return count === mealIds.length;
+  }
+
   async findMostOrderedMeal() {
     const mostOrderedMeal = await this.mealRepo
       .createQueryBuilder('meal')

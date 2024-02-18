@@ -76,4 +76,9 @@ export class PackageService {
       message: `Permanent delete package successful with id ${id}`,
     };
   }
+
+  async getPackagePriceById(packageId: string) {
+    const packageEntity = await this.findOne(packageId);
+    return packageEntity.price;
+  }
 }
