@@ -1,21 +1,37 @@
-import { IsNotEmpty, IsNumber, IsUUID, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsUUID,
+  Min,
+  IsInt,
+  IsEnum,
+  IsString,
+} from 'class-validator';
+import { PickType } from 'src/order/entities/order.entity';
 
-export class CreateOrderDetailDto {
-  @IsUUID()
+export class MealDetailDto {
   @IsNotEmpty()
+  @IsUUID()
   mealId: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  orderId: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(0)
+  @IsInt()
+  @Min(1)
   count: number;
-
-  @IsNumber()
+}
+export class CreateOrderDetailDto {
   @IsNotEmpty()
-  @Min(0)
-  totalPrice: number;
+  @IsUUID()
+  clientId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  restaurantId: string;
+
+  @IsNotEmpty()
+  @IsEnum(PickType)
+  pickMethod: PickType;
+
+  @IsString()
+  additionalInfo: string;
+  @IsNotEmpty({ each: true })
+  meals: MealDetailDto[];
 }
