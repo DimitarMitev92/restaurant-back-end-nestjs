@@ -5,6 +5,7 @@ import { Menu } from './entities/menu.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { Type } from './entities/menu.entity';
 
 export class MenuService {
   constructor(
@@ -19,7 +20,7 @@ export class MenuService {
         `Restaurant with ID ${createMenuDto.restaurantId} not found`,
       );
     }
-
+    createMenuDto.type = createMenuDto.type || Type.MAIN_MENU;
     const existingMenu = await this.menuRepo.findOne({
       where: {
         type: createMenuDto.type,
