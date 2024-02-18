@@ -8,17 +8,23 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { Public } from 'src/auth/public.decorator';
 import { NotFoundException } from '@nestjs/common';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { UserRights } from 'src/user/entities/user.entity';
+
 @Controller('menu')
+@UseGuards(RolesGuard)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Post('/create')
   async create(@Body() createMenuDto: CreateMenuDto) {
     const menu = await this.menuService.create(createMenuDto);
@@ -41,20 +47,20 @@ export class MenuController {
     return menu;
   }
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
     return this.menuService.update(id, updateMenuDto);
   }
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting soft removal for menu with id:${id}`);
     return this.menuService.removeSoft(id);
   }
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting permanent removal for menu with id :${id}`);
