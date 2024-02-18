@@ -7,6 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { OrderDetail } from './entities/order-detail.entity';
 import { Repository } from 'typeorm';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
+import { Meal } from 'src/meal/entities/meal.entity';
+import { Menu } from 'src/menu/entities/menu.entity';
+import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 @Injectable()
 export class OrderDetailService {
   constructor(
@@ -89,5 +92,28 @@ export class OrderDetailService {
     return await this.orderDetailRepository.find({
       where: { orderId: orderId },
     });
+  }
+
+  async getMostOrderedMeal() {
+    const query = await this.orderDetailRepository
+      .createQueryBuilder('od')
+      .select('meal.id', 'meal_id')
+      .addSelect('meal.name', 'meal_name')
+      .addSelect('restaurant.name', 'restaurant_name')
+      .addSelect('COUNT(od.meal_id)', 'order_count')
+      .innerJoin(Meal, 'meal', '"meal"."id" = "od"."meal_id"')
+      .innerJoin(Menu, 'menu', '"menu"."id" = "meal"."menu_id"')
+      .innerJoin(
+        Restaurant,
+        'restaurant',
+        '"restaurant"."id" = "menu"."restaurant_id"',
+      )
+      .where('"od"."deleted_at" IS NULL')
+      .groupBy('meal.id, meal.name, restaurant.name')
+      .orderBy('order_count', 'DESC')
+      .limit(1)
+      .getRawMany();
+
+    return query;
   }
 }

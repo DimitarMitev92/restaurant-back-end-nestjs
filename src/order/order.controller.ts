@@ -12,7 +12,6 @@ import {
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { Public } from 'src/auth/public.decorator';
 import { CreateOrderDetailDto } from 'src/order-detail/dto/create-order-detail.dto';
 import { UpdateOrderDetailDto } from 'src/order-detail/dto/update-order-detail.dto';
 import { UseGuards } from '@nestjs/common';

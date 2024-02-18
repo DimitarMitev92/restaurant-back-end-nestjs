@@ -1,15 +1,35 @@
 import { Public } from 'src/auth/public.decorator';
 import { OrderDetailService } from './order-detail.service';
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRights } from 'src/user/entities/user.entity';
 
-@UseGuards(RolesGuard)
 @Controller('order-detail')
+@UseGuards(RolesGuard)
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) {}
+
+  @Public()
+  @Get('most-ordered')
+  async findMostOrderedMeal() {
+    try {
+      const mostOrderedMeal =
+        await this.orderDetailService.getMostOrderedMeal();
+      return { mostOrderedMeal };
+    } catch (error) {
+      console.error('Error fetching most ordered meal:', error);
+      throw new NotFoundException(
+        'An error occurred while fetching the most ordered meal',
+      );
+    }
+  }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Get()
@@ -18,7 +38,7 @@ export class OrderDetailController {
   }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const order = await this.orderDetailService.findOne(id);
     if (!order) {
