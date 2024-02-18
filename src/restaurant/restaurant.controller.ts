@@ -9,17 +9,22 @@ import {
   Query,
   NotFoundException,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { RestaurantService } from './restaurant.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { Public } from 'src/auth/public.decorator';
+import { UserRights } from 'src/user/entities/user.entity';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
+@UseGuards(RolesGuard)
 @Controller('restaurant')
 export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Post('/create')
   async create(@Body() createRestaurantDto: CreateRestaurantDto) {
     const restaurant = await this.restaurantService.create(createRestaurantDto);
@@ -42,8 +47,8 @@ export class RestaurantController {
     return restaurant;
   }
 
-  @Public()
   @Patch(':id')
+  @Roles([UserRights.ADMIN])
   update(
     @Param('id') id: string,
     @Body() updateRestaurantDto: UpdateRestaurantDto,
@@ -51,14 +56,14 @@ export class RestaurantController {
     return this.restaurantService.update(id, updateRestaurantDto);
   }
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting soft removal for restaurant with id:${id}`);
     return this.restaurantService.removeSoft(id);
   }
 
-  @Public()
+  @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting permanent removal for restaurant with id :${id}`);
