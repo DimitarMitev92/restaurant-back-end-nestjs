@@ -171,4 +171,19 @@ export class MealService {
 
     return mostOrderedMeal;
   }
+
+  async getNewestMeals(): Promise<Meal[]> {
+    const newestMeals = await this.mealRepo.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 5,
+    });
+
+    if (newestMeals.length === 0) {
+      throw new NotFoundException('No meals found');
+    }
+
+    return newestMeals;
+  }
 }

@@ -1,4 +1,3 @@
-import { Public } from 'src/auth/public.decorator';
 import { OrderDetailService } from './order-detail.service';
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { UseGuards } from '@nestjs/common';
