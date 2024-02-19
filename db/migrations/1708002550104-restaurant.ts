@@ -26,6 +26,7 @@ export class Restaurant1708002550104 implements MigrationInterface {
             name: 'location_id',
             type: 'uuid',
           },
+          { name: 'image_url', type: 'varchar' },
           {
             name: 'open_hour',
             type: 'time without time zone',

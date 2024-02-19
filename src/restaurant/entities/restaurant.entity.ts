@@ -18,6 +18,9 @@ export class Restaurant {
   @Column({ name: 'location_id' })
   locationId: string;
 
+  @Column({ name: 'image_url' })
+  imageUrl: string;
+
   @Column({
     name: 'open_hour',
     type: 'time',
