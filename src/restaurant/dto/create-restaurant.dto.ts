@@ -10,6 +10,9 @@ export class CreateRestaurantDto {
   locationId: string;
 
   @IsNotEmpty()
+  imageUrl: string;
+
+  @IsNotEmpty()
   openHour: string;
 
   @IsNotEmpty()
