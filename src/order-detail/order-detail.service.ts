@@ -108,11 +108,9 @@ export class OrderDetailService {
         'restaurant',
         '"restaurant"."id" = "menu"."restaurant_id"',
       )
-      .where('"od"."deleted_at" IS NULL')
       .groupBy('meal.id, meal.name, restaurant.name')
       .orderBy('order_count', 'DESC')
-      .limit(1)
-      .getRawMany();
+      .limit(1);
 
     return query;
   }
