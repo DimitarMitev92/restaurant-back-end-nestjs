@@ -24,7 +24,6 @@ import { UserRights } from 'src/user/entities/user.entity';
 export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
-  // @Roles([UserRights.ADMIN])
   @Public()
   @Post('/create')
   async create(@Body() createLocationDto: CreateLocationDto) {

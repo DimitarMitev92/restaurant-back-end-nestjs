@@ -51,8 +51,8 @@ export class UserService {
       }
     }
 
-    Object.assign(existingUser, data);
+    const updatedUser = { ...existingUser, ...data };
 
-    return await this.userRepository.save(existingUser);
+    return await this.userRepository.save(updatedUser);
   }
 }
