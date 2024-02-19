@@ -153,25 +153,6 @@ export class MealService {
     return count === mealIds.length;
   }
 
-  async findMostOrderedMeal() {
-    const mostOrderedMeal = await this.mealRepo
-      .createQueryBuilder('meal')
-      .leftJoinAndSelect('meal.menu', 'menu')
-      .leftJoinAndSelect('menu.restaurant', 'restaurant')
-      .leftJoin('meal.orderDetails', 'orderDetail')
-      .select('meal.id', 'meal_id')
-      .addSelect('meal.name', 'meal_name')
-      .addSelect('restaurant.name', 'restaurant_name')
-      .addSelect('COUNT(orderDetail.mealId)', 'order_count')
-      .groupBy('meal.id')
-      .addGroupBy('restaurant.name')
-      .orderBy('order_count', 'DESC')
-      .limit(1)
-      .getRawOne();
-
-    return mostOrderedMeal;
-  }
-
   async getNewestMeals(): Promise<Meal[]> {
     const newestMeals = await this.mealRepo.find({
       order: {

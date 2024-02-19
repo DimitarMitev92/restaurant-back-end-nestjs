@@ -24,6 +24,12 @@ import { Public } from 'src/auth/public.decorator';
 export class MealController {
   constructor(private readonly mealService: MealService) {}
 
+  @Public()
+  @Get('/newest')
+  getNewestMeals() {
+    return this.mealService.getNewestMeals();
+  }
+
   @Roles([UserRights.ADMIN])
   @Post('/create')
   async create(@Body() createMealDto: CreateMealDto) {
@@ -32,21 +38,9 @@ export class MealController {
   }
 
   @Public()
-  @Get('/most')
-  async getMostOrderedMeal() {
-    return await this.mealService.findMostOrderedMeal();
-  }
-
-  @Public()
   @Get()
   findAll(@Query('name') name: string) {
     return this.mealService.findAll(name);
-  }
-
-  @Public()
-  @Get('/newest')
-  getNewestMeals() {
-    return this.mealService.getNewestMeals();
   }
 
   @Public()
