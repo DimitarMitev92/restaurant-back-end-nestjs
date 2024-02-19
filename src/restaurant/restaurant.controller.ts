@@ -47,6 +47,18 @@ export class RestaurantController {
     return restaurant;
   }
 
+  @Public()
+  @Get('/:id/meals')
+  async findMealsByRestourant(@Param('id') id: string) {
+    console.log('test');
+
+    const restaurant = await this.restaurantService.findMealsByResId(id);
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+    return restaurant;
+  }
+
   @Patch(':id')
   @Roles([UserRights.ADMIN])
   update(

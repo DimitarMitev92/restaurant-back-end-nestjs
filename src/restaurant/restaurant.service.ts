@@ -8,6 +8,8 @@ import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { Repository } from 'typeorm';
+import { Menu } from 'src/menu/entities/menu.entity';
+import { Meal } from 'src/meal/entities/meal.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -39,6 +41,27 @@ export class RestaurantService {
       throw new NotFoundException(`Restaurant with ID ${id} not found`);
     }
     return restaurant;
+  }
+
+  async findMealsByResId(id: string) {
+    await this.restaurantRepo.findOneBy({ id });
+
+    const queryBuilder = this.restaurantRepo.createQueryBuilder('test');
+
+    const query = await queryBuilder
+      .select([
+        'menu',
+        'meal', // Include meal columns you need
+      ])
+      .from(Meal, 'meal')
+      .innerJoin(Menu, 'menu', 'meal.menu_id = menu.id')
+      .innerJoin(Restaurant, 'res', `menu.restaurant_id = '${id}'`)
+      .orderBy('menu.type')
+      .getRawMany();
+
+    console.log(query);
+
+    return query;
   }
 
   async update(
