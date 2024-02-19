@@ -9,6 +9,7 @@ import {
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRights } from 'src/user/entities/user.entity';
+import { Public } from 'src/auth/public.decorator';
 
 @Controller('order-detail')
 @UseGuards(RolesGuard)
