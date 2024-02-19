@@ -44,6 +44,12 @@ export class MealController {
   }
 
   @Public()
+  @Get('/newest')
+  getNewestMeals() {
+    return this.mealService.getNewestMeals();
+  }
+
+  @Public()
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     const meal = await this.mealService.findOne(id);
