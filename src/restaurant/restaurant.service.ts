@@ -8,8 +8,6 @@ import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { Repository } from 'typeorm';
-import { Menu } from 'src/menu/entities/menu.entity';
-import { Meal } from 'src/meal/entities/meal.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -44,24 +42,67 @@ export class RestaurantService {
   }
 
   async findMealsByResId(id: string) {
-    await this.restaurantRepo.findOneBy({ id });
+    const restaurant = await this.restaurantRepo.findOneBy({ id });
 
-    const queryBuilder = this.restaurantRepo.createQueryBuilder('test');
+    //DO NOT DELETE YET!!!
+    // const queryBuilder = this.restaurantRepo.createQueryBuilder('');
 
-    const query = await queryBuilder
-      .select([
-        'menu',
-        'meal', // Include meal columns you need
-      ])
-      .from(Meal, 'meal')
-      .innerJoin(Menu, 'menu', 'meal.menu_id = menu.id')
-      .innerJoin(Restaurant, 'res', `menu.restaurant_id = '${id}'`)
-      .orderBy('menu.type')
-      .getRawMany();
+    // const query = await this.restaurantRepo
+    //   .createQueryBuilder('getAllMeals')
+    //   .select('menu,meal')
+    //   .from(Menu, 'menu')
+    //   .leftJoin(Meal, 'meal', 'menu.id = meal.menu_id')
+    //   .where(`menu.restaurant_id = :id`, { id: id })
+    //   .getQuery();
+    // return query;
 
-    console.log(query);
+    //TO DO: Fix the query so that you don't need to do a new object structure
+    const query = `
+         SELECT menu.id AS "menuId", menu.type, meal.*
+         FROM menu
+         LEFT JOIN meal ON menu.id = meal.menu_id
+         WHERE menu.restaurant_id = '${id}'
+`;
 
-    return query;
+    const queryResult = await this.restaurantRepo.query(query);
+    const result = {};
+    result['restaurant'] = restaurant.name;
+    result['menus'] = [];
+    queryResult.forEach((meal) => {
+      if (!result['menus'].some((e) => e.name === meal.type)) {
+        const mealObj = {
+          name: meal.type,
+          id: meal.menuId,
+        };
+
+        const mappedResult = queryResult.filter(
+          (meal) => meal.type == mealObj.name,
+        );
+        const mealArr = mappedResult.map((meal) => {
+          if (meal.type == mealObj.name) {
+            return {
+              id: meal.id,
+              name: meal.name,
+              picture: meal.picture,
+              description: meal.description,
+              additionalNote: meal.additional_note,
+              startDate: meal.start_date,
+              endDate: meal.end_date,
+              startHour: meal.start_hour,
+              endHour: meal.end_hour,
+              price: meal.price,
+              weight: meal.weight,
+              categoryId: meal.category_id,
+              packageId: meal.package_id,
+            };
+          }
+        });
+
+        mealObj['meals'] = mealArr;
+        result['menus'].push(mealObj);
+      }
+    });
+    return result;
   }
 
   async update(

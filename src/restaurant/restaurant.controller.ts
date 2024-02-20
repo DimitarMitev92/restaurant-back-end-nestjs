@@ -50,8 +50,6 @@ export class RestaurantController {
   @Public()
   @Get('/:id/meals')
   async findMealsByRestourant(@Param('id') id: string) {
-    console.log('test');
-
     const restaurant = await this.restaurantService.findMealsByResId(id);
     if (!restaurant) {
       throw new NotFoundException('Restaurant not found');
