@@ -20,9 +20,6 @@ export class Meal {
   @Column({ name: 'description' })
   description: string;
 
-  @Column({ name: 'additional_note' })
-  additionalNote: string;
-
   @CreateDateColumn({ name: 'start_date' })
   startDate: Date;
 
