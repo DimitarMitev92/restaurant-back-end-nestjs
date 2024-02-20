@@ -26,10 +26,10 @@ export class Meal {
   @CreateDateColumn({ name: 'end_date' })
   endDate: Date;
 
-  @Column({ name: 'start_hour', type: 'time' })
+  @Column({ name: 'start_hour', type: 'time', precision: 0 })
   startHour: string;
 
-  @CreateDateColumn({ name: 'end_hour', type: 'time' })
+  @CreateDateColumn({ name: 'end_hour', type: 'time', precision: 0 })
   endHour: string;
 
   @Column('double precision')
