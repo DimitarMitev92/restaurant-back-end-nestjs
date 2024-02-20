@@ -41,6 +41,70 @@ export class RestaurantService {
     return restaurant;
   }
 
+  async findMealsByResId(id: string) {
+    const restaurant = await this.restaurantRepo.findOneBy({ id });
+
+    //DO NOT DELETE YET!!!
+    // const queryBuilder = this.restaurantRepo.createQueryBuilder('');
+
+    // const query = await this.restaurantRepo
+    //   .createQueryBuilder('getAllMeals')
+    //   .select('menu,meal')
+    //   .from(Menu, 'menu')
+    //   .leftJoin(Meal, 'meal', 'menu.id = meal.menu_id')
+    //   .where(`menu.restaurant_id = :id`, { id: id })
+    //   .getQuery();
+    // return query;
+
+    //TO DO: Fix the query so that you don't need to do a new object structure
+    const query = `
+         SELECT menu.id AS "menuId", menu.type, meal.*
+         FROM menu
+         LEFT JOIN meal ON menu.id = meal.menu_id
+         WHERE menu.restaurant_id = '${id}'
+`;
+
+    const queryResult = await this.restaurantRepo.query(query);
+    const result = {};
+    result['restaurant'] = restaurant.name;
+    result['menus'] = [];
+    queryResult.forEach((meal) => {
+      if (!result['menus'].some((e) => e.name === meal.type)) {
+        const mealObj = {
+          name: meal.type,
+          id: meal.menuId,
+        };
+
+        const mappedResult = queryResult.filter(
+          (meal) => meal.type == mealObj.name,
+        );
+        const mealArr = mappedResult.map((meal) => {
+          if (meal.type == mealObj.name) {
+            return {
+              id: meal.id,
+              name: meal.name,
+              picture: meal.picture,
+              description: meal.description,
+              additionalNote: meal.additional_note,
+              startDate: meal.start_date,
+              endDate: meal.end_date,
+              startHour: meal.start_hour,
+              endHour: meal.end_hour,
+              price: meal.price,
+              weight: meal.weight,
+              categoryId: meal.category_id,
+              packageId: meal.package_id,
+            };
+          }
+        });
+
+        mealObj['meals'] = mealArr;
+        result['menus'].push(mealObj);
+      }
+    });
+    return result;
+  }
+
   async update(
     id: string,
     updateRestaurantDto: UpdateRestaurantDto,
