@@ -31,10 +31,6 @@ export class CreateMealDto {
   @IsNotEmpty()
   description: string;
 
-  @IsString()
-  @IsOptional()
-  additionalNote: string;
-
   @IsNotEmpty()
   startDate: Date;
 

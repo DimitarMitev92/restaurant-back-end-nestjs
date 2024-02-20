@@ -32,10 +32,6 @@ export class Meal1708026131991 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'additional_note',
-            type: 'varchar',
-          },
-          {
             name: 'start_date',
             type: 'date',
           },
