@@ -18,6 +18,7 @@ import { OrderDetailModule } from './order-detail/order-detail.module';
 import { PackageModule } from './package/package.module';
 import { AwsController } from './aws/aws.controller';
 import { AwsModule } from './aws/aws.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AwsModule } from './aws/aws.module';
     OrderDetailModule,
     PackageModule,
     AwsModule,
+    AddressModule,
   ],
   controllers: [AppController, AwsController],
   providers: [{ provide: APP_GUARD, useClass: RolesGuard }, AppService],
