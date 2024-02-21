@@ -79,4 +79,10 @@ export class RestaurantController {
     console.log(`Attempting permanent removal for restaurant with id :${id}`);
     return this.restaurantService.removePermanent(id);
   }
+
+  @Public()
+  @Get('/byLocationId/:locationId')
+  fetchRestaurantsByLocationId(@Param('locationId') locationId: string) {
+    return this.restaurantService.findRestaurantsByLocationId(locationId);
+  }
 }
