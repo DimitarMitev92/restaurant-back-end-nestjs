@@ -5,6 +5,7 @@ import {
   IsInt,
   IsEnum,
   IsString,
+  IsOptional,
 } from 'class-validator';
 import { PickType } from 'src/order/entities/order.entity';
 
@@ -16,6 +17,10 @@ export class MealDetailDto {
   @IsInt()
   @Min(1)
   count: number;
+
+  @IsString()
+  @IsOptional()
+  additionalNote?: string;
 }
 export class CreateOrderDetailDto {
   @IsNotEmpty()
@@ -31,7 +36,9 @@ export class CreateOrderDetailDto {
   pickMethod: PickType;
 
   @IsString()
-  additionalInfo: string;
+  @IsOptional()
+  additionalInfo?: string;
+
   @IsNotEmpty({ each: true })
   meals: MealDetailDto[];
 }
