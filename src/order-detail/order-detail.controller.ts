@@ -38,7 +38,7 @@ export class OrderDetailController {
   }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
-  @Get('/:id')
+  @Get(':id')
   async findOne(@Param('id') id: string) {
     const order = await this.orderDetailService.findOne(id);
     if (!order) {

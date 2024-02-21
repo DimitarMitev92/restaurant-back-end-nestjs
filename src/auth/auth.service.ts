@@ -52,6 +52,7 @@ export class AuthService {
     };
 
     const loggedUser = {
+      id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       locationId: user.locationId,
@@ -96,6 +97,7 @@ export class AuthService {
     };
 
     const registeredUser = {
+      id: returnedUserFromBase.id,
       firstName: returnedUserFromBase.firstName,
       lastName: returnedUserFromBase.lastName,
       locationId: returnedUserFromBase.locationId,
