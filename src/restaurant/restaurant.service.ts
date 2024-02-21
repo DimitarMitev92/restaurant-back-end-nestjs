@@ -146,4 +146,10 @@ export class RestaurantService {
       message: `Permanent delete restaurant successful with id ${id}`,
     };
   }
+
+  async findRestaurantsByLocationId(locationId: string) {
+    return await this.restaurantRepo.find({
+      where: { locationId: locationId },
+    });
+  }
 }
