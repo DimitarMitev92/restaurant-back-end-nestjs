@@ -65,6 +65,7 @@ export class OrderService {
               mealId: mealDetail.mealId,
               count: mealDetail.count,
               totalPrice: totalPrice,
+              additionalNote: mealDetail.additionalNote,
             });
           },
         );
@@ -73,6 +74,7 @@ export class OrderService {
         await transactionEntityManager.save(orderDetails);
 
         finalPrice = parseFloat(finalPrice.toFixed(2));
+    
 
         const orderResponse = {
           clientId: order.clientId,
@@ -88,6 +90,7 @@ export class OrderService {
             mealId: detail.mealId,
             count: detail.count,
             totalPrice: detail.totalPrice,
+            additionalNote: detail.additionalNote,
           })),
         };
 

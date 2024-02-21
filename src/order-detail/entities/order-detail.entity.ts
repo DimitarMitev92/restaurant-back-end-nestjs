@@ -24,6 +24,9 @@ export class OrderDetail {
   @Column({ name: 'total_price' })
   totalPrice: number;
 
+  @Column({ name: 'additional_note' })
+  additionalNote: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -21,6 +21,8 @@ export class OrderDetail1708027409349 implements MigrationInterface {
           { name: 'order_id', type: 'uuid', isNullable: false },
           { name: 'count', type: 'integer', isNullable: false },
           { name: 'total_price', type: 'double precision', isNullable: false },
+          { name: 'additional_note', type: 'varchar', isNullable: true },
+
           {
             name: 'created_at',
             type: 'timestamp',
@@ -58,6 +60,6 @@ export class OrderDetail1708027409349 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('order_deital', true, true, true);
+    await queryRunner.dropTable('order_detail', true, true, true);
   }
 }
