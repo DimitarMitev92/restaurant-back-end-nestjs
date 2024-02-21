@@ -24,7 +24,7 @@ export class PackageController {
   constructor(private readonly packageService: PackageService) {}
 
   @Roles([UserRights.ADMIN])
-  @Post('create')
+  @Post('/create')
   async create(@Body() createPackageDto: CreatePackageDto) {
     const pack = await this.packageService.create(createPackageDto);
     return pack;
@@ -37,7 +37,7 @@ export class PackageController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const pack = await this.packageService.findOne(id);
     if (!pack) {

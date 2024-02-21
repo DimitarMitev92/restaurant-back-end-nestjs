@@ -25,7 +25,7 @@ export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
-  @Post('create')
+  @Post('/create')
   async create(
     @Body() createOrderDto: CreateOrderDto,
     @Body() createOrderDetailDto: CreateOrderDetailDto,
@@ -40,7 +40,7 @@ export class OrderController {
   }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const order = await this.orderService.findOne(id);
     if (!order) {
