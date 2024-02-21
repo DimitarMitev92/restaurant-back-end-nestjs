@@ -44,6 +44,9 @@ export class User {
   @IsEnum(UserRights)
   rights: string;
 
+  @Column({ type: 'text', array: true, nullable: true })
+  addresses: string[];
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

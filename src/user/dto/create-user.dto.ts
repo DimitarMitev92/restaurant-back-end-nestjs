@@ -1,4 +1,11 @@
-import { IsEmail, IsNotEmpty, IsUUID } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -17,4 +24,9 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsUUID()
   readonly locationId: string;
+
+  @IsArray()
+  @ArrayMinSize(1, { message: 'At least one address is required' })
+  @IsString({ each: true })
+  readonly addresses: string[];
 }
