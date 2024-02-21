@@ -26,7 +26,6 @@ export class CreateUserDto {
   readonly locationId: string;
 
   @IsArray()
-  @ArrayMinSize(1, { message: 'At least one address is required' })
   @IsString({ each: true })
-  readonly addresses: string[];
+  readonly addresses?: string[];
 }

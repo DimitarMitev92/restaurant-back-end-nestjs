@@ -45,7 +45,7 @@ export class User {
   rights: string;
 
   @Column({ type: 'text', array: true, nullable: true })
-  addresses: string[];
+  addresses?: string[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
