@@ -2,10 +2,8 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  TableIndex,
   TableForeignKey,
 } from 'typeorm';
-import { Type } from 'src/menu/entities/menu.entity';
 
 export class Menu1708002550105 implements MigrationInterface {
   async up(queryRunner: QueryRunner): Promise<void> {
@@ -21,16 +19,8 @@ export class Menu1708002550105 implements MigrationInterface {
             generationStrategy: 'uuid',
           },
           {
-            name: 'type',
-            type: 'enum',
-            enumName: 'menu_type_enum',
-            enum: [
-              Type.GLUTEN_FREE,
-              Type.LUNCH_MENU,
-              Type.VEGAN,
-              Type.MAIN_MENU,
-            ],
-            default: `'MAIN_MENU'`,
+            name: 'menu_type_id',
+            type: 'uuid',
           },
           {
             name: 'restaurant_id',
@@ -56,11 +46,12 @@ export class Menu1708002550105 implements MigrationInterface {
       true,
     );
 
-    await queryRunner.createIndex(
+    await queryRunner.createForeignKey(
       'menu',
-      new TableIndex({
-        name: 'IDX_MENU_TYPE',
-        columnNames: ['type'],
+      new TableForeignKey({
+        columnNames: ['menu_type_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'menu_type',
       }),
     );
 
@@ -76,7 +67,7 @@ export class Menu1708002550105 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.dropForeignKey('menu', 'restaurant_id');
-    await queryRunner.dropIndex('menu', 'IDX_MENU_TYPE');
+    await queryRunner.dropForeignKey('menu', 'menu_type_id');
     await queryRunner.dropTable('menu');
   }
 }

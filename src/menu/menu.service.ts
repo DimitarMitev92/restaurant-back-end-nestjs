@@ -5,7 +5,6 @@ import { Menu } from './entities/menu.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Type } from './entities/menu.entity';
 
 export class MenuService {
   constructor(
@@ -20,17 +19,16 @@ export class MenuService {
         `Restaurant with ID ${createMenuDto.restaurantId} not found`,
       );
     }
-    createMenuDto.type = createMenuDto.type || Type.MAIN_MENU;
     const existingMenu = await this.menuRepo.findOne({
       where: {
-        type: createMenuDto.type,
+        menuTypeId: createMenuDto.menuTypeId,
         restaurantId: createMenuDto.restaurantId,
       },
     });
 
     if (existingMenu) {
       throw new BadRequestException(
-        `Menu with type ${createMenuDto.type} already exists for this restaurant`,
+        `Menu with type this type already exists for this restaurant`,
       );
     }
 
@@ -38,8 +36,8 @@ export class MenuService {
     return this.menuRepo.save(newMenu);
   }
 
-  findAll(type: string) {
-    return this.menuRepo.find({ where: { type } });
+  findAll() {
+    return this.menuRepo.find();
   }
 
   async findOne(id: string): Promise<Menu> {

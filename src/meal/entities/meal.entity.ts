@@ -6,6 +6,7 @@ import {
   DeleteDateColumn,
   Column,
 } from 'typeorm';
+
 @Entity()
 export class Meal {
   @PrimaryGeneratedColumn('uuid')

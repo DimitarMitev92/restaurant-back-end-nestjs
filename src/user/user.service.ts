@@ -11,28 +11,28 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepo: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find({ where: { deletedAt: null } });
+  async findAll() {
+    return this.userRepo.find();
   }
 
   async findOne(id: string): Promise<User> {
-    return this.userRepository.findOne({
+    return this.userRepo.findOne({
       where: { id, deletedAt: null },
     });
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    return this.userRepository.findOne({
+    return this.userRepo.findOne({
       where: { email: email, deletedAt: null },
     });
   }
 
   async create(data: DeepPartial<User>): Promise<User> {
-    const user = this.userRepository.create(data);
-    return await this.userRepository.save(user);
+    const user = this.userRepo.create(data);
+    return await this.userRepo.save(user);
   }
 
   async update(id: string, data: DeepPartial<User>): Promise<User> {
@@ -53,6 +53,6 @@ export class UserService {
 
     const updatedUser = { ...existingUser, ...data };
 
-    return await this.userRepository.save(updatedUser);
+    return await this.userRepo.save(updatedUser);
   }
 }
