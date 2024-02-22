@@ -33,7 +33,7 @@ export class MenuController {
   @Public()
   @Get()
   findAll() {
-    return this.menuService.findAll();
+    return this.menuService.findAllWithMenuType();
   }
 
   @Public()

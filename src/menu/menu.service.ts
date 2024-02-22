@@ -5,10 +5,13 @@ import { Menu } from './entities/menu.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { MenuType } from 'src/menu-type/entities/menu-type.entity';
 
 export class MenuService {
   constructor(
     @InjectRepository(Menu) private readonly menuRepo: Repository<Menu>,
+    @InjectRepository(MenuType)
+    private readonly menuTypeRepo: Repository<MenuType>,
     private readonly restaurantService: RestaurantService,
   ) {}
   async create(createMenuDto: CreateMenuDto) {
@@ -38,6 +41,22 @@ export class MenuService {
 
   findAll() {
     return this.menuRepo.find();
+  }
+
+  async findAllWithMenuType() {
+    const menus = await this.menuRepo.find();
+    const menusWithMenuType = await Promise.all(
+      menus.map(async (menu) => {
+        const menuType = await this.menuTypeRepo.findOneBy({
+          id: menu.menuTypeId,
+        });
+        return {
+          ...menu,
+          menuTypeValue: menuType ? menuType.type : null,
+        };
+      }),
+    );
+    return menusWithMenuType;
   }
 
   async findOne(id: string): Promise<Menu> {
