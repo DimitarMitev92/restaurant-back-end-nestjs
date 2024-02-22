@@ -19,6 +19,7 @@ import { PackageModule } from './package/package.module';
 import { AwsController } from './aws/aws.controller';
 import { AwsModule } from './aws/aws.module';
 import { AddressModule } from './address/address.module';
+import { MenuTypeModule } from './menu-type/menu-type.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AddressModule } from './address/address.module';
     OrderModule,
     MenuModule,
     MealModule,
+    MenuTypeModule,
     AuthModule,
     LocationModule,
     CategoryModule,
