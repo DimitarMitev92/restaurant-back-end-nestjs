@@ -19,6 +19,7 @@ import { Menu } from 'src/menu/entities/menu.entity';
 import { RestaurantService } from 'src/restaurant/restaurant.service';
 import { RestaurantModule } from 'src/restaurant/restaurant.module';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
+import { MenuType } from 'src/menu-type/entities/menu-type.entity';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
       Category,
       Package,
       Menu,
+      MenuType,
       Restaurant,
     ]),
     forwardRef(() => OrderDetailModule),

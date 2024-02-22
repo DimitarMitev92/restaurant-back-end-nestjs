@@ -23,7 +23,7 @@ export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
-  @Post()
+  @Post('create')
   create(@Body() createAddressDto: CreateAddressDto) {
     return this.addressService.create(createAddressDto);
   }
