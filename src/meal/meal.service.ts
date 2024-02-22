@@ -64,11 +64,34 @@ export class MealService {
       );
     }
 
+    const endDateObject = new Date(createMealDto.endDate);
+    const currentDate = new Date();
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
+    const endHourMinutes = this.convertTimeToMinutes(endHour);
+    endDateObject.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const [endHours, endMinutes] = createMealDto.endHour.split(':').map(Number);
+    endDateObject.setHours(endHours, endMinutes, 0, 0);
+
+    if (endDateObject < currentDate) {
+      throw new BadRequestException(
+        'End date and time cannot be before the current date and time',
+      );
+    } else if (endDateObject.toDateString() === currentDate.toDateString()) {
+      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+      if (endHourMinutes <= currentTimeInMinutes) {
+        throw new BadRequestException(
+          'End time cannot be in the past on the current day',
+        );
+      }
+    }
+
     if (startDate > endDate) {
       throw new BadRequestException('Start date must be on or before end date');
     }
     const startHourMinutes = this.convertTimeToMinutes(startHour);
-    const endHourMinutes = this.convertTimeToMinutes(endHour);
 
     if (startHourMinutes >= endHourMinutes) {
       throw new BadRequestException('Start hour must be before end hour');
