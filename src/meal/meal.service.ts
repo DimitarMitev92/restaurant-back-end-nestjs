@@ -5,12 +5,15 @@ import {
 } from '@nestjs/common';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Meal } from './entities/meal.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { MenuService } from 'src/menu/menu.service';
 import { CategoryService } from 'src/category/category.service';
 import { PackageService } from 'src/package/package.service';
+import { Menu } from 'src/menu/entities/menu.entity';
+import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
+import { MenuType } from 'src/menu-type/entities/menu-type.entity';
 @Injectable()
 export class MealService {
   constructor(
@@ -18,6 +21,8 @@ export class MealService {
     private readonly menuService: MenuService,
     private readonly categoryService: CategoryService,
     private readonly packageService: PackageService,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
   async create(createMealDto: CreateMealDto) {
     const {
@@ -167,5 +172,85 @@ export class MealService {
     }
 
     return newestMeals;
+  }
+
+  async findMealsByRestaurantId(restaurantId: string) {
+    const restaurant = await this.entityManager
+      .getRepository(Restaurant)
+      .createQueryBuilder('restaurant')
+      .select('restaurant.name')
+      .where('restaurant.id = :restaurantId', { restaurantId })
+      .getOne();
+
+    if (!restaurant) {
+      throw new NotFoundException(
+        `Restaurant with ID ${restaurantId} not found`,
+      );
+    }
+
+    const menus = await this.entityManager
+      .getRepository(Menu)
+      .createQueryBuilder('menu')
+      .where('menu.restaurantId = :restaurantId', { restaurantId })
+      .getMany();
+
+    if (menus.length === 0) {
+      throw new NotFoundException(
+        `No menus found for restaurant with ID ${restaurantId}`,
+      );
+    }
+
+    const menuIds = menus.map((menu) => menu.id);
+    const meals = await this.entityManager
+      .getRepository(Meal)
+      .createQueryBuilder('meal')
+      .where('meal.menuId IN (:...menuIds)', { menuIds })
+      .getMany();
+
+    if (meals.length === 0) {
+      throw new NotFoundException(
+        `No meals found for menus of restaurant with ID ${restaurantId}`,
+      );
+    }
+
+    const menuTypeIds = menus.map((menu) => menu.menuTypeId);
+    const menuTypes = await this.entityManager
+      .getRepository(MenuType)
+      .createQueryBuilder('menuType')
+      .where('menuType.id IN (:...menuTypeIds)', { menuTypeIds })
+      .getMany();
+
+    menuTypes.forEach((menuType) => console.log(menuType.type));
+
+    const response = {
+      restaurant: restaurant.name,
+      menus: menus.map((menu) => {
+        const menuType = menuTypes.find(
+          (type) => type.id === menu.menuTypeId,
+        )?.type;
+        return {
+          id: menu.id,
+          type: menuType,
+          meals: meals
+            .filter((meal) => meal.menuId === menu.id)
+            .map((meal) => ({
+              id: meal.id,
+              name: meal.name,
+              picture: meal.picture,
+              description: meal.description,
+              startDate: meal.startDate,
+              endDate: meal.endDate,
+              startHour: meal.startHour,
+              endHour: meal.endHour,
+              price: meal.price,
+              weight: meal.weight,
+              categoryId: meal.categoryId,
+              packageId: meal.packageId,
+            })),
+        };
+      }),
+    };
+
+    return response;
   }
 }
