@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Body,
   Patch,
   Param,
@@ -32,8 +31,8 @@ export class PackageController {
 
   @Public()
   @Get()
-  findAll(@Query('type') type: string) {
-    return this.packageService.findAll(type);
+  findAll() {
+    return this.packageService.findAll();
   }
 
   @Public()

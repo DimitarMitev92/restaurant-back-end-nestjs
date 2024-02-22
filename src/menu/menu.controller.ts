@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
@@ -33,8 +32,8 @@ export class MenuController {
 
   @Public()
   @Get()
-  findAll(@Query('type') type: string) {
-    return this.menuService.findAll(type);
+  findAll() {
+    return this.menuService.findAll();
   }
 
   @Public()

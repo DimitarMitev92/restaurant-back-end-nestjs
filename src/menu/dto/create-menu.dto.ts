@@ -1,16 +1,9 @@
-import {
-  IsUUID,
-  IsNotEmpty,
-  IsString,
-  IsEnum,
-  IsOptional,
-} from 'class-validator';
-import { Type } from '../entities/menu.entity';
+import { IsUUID, IsNotEmpty, IsString } from 'class-validator';
 export class CreateMenuDto {
+  @IsNotEmpty()
   @IsString()
-  @IsOptional()
-  @IsEnum(Type)
-  type?: string;
+  menuTypeId: string;
+
   @IsNotEmpty()
   @IsUUID()
   restaurantId: string;

@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   NotFoundException,
   ParseUUIDPipe,
   UseGuards,
@@ -33,8 +32,8 @@ export class CategoryController {
 
   @Public()
   @Get()
-  findAll(@Query('type') type: string) {
-    return this.categoryService.findAll(type);
+  findAll() {
+    return this.categoryService.findAll();
   }
 
   @Public()

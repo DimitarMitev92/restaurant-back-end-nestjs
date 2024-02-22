@@ -24,8 +24,8 @@ export class LocationService {
     return this.locationRepo.save(newLocation);
   }
 
-  async findAll(name: string) {
-    return this.locationRepo.find({ where: { name } });
+  async findAll() {
+    return this.locationRepo.find();
   }
   async findOne(id: string): Promise<Location> {
     const location = await this.locationRepo.findOneBy({ id });

@@ -23,8 +23,8 @@ export class PackageService {
     return this.packageRepo.save(newPackage);
   }
 
-  async findAll(type: string): Promise<Package[]> {
-    return this.packageRepo.find({ where: { type } });
+  async findAll(): Promise<Package[]> {
+    return this.packageRepo.find();
   }
 
   async findOne(id: string): Promise<Package> {

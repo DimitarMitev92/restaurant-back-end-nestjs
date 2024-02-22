@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   NotFoundException,
   ParseUUIDPipe,
   UseGuards,
@@ -33,8 +32,8 @@ export class RestaurantController {
 
   @Public()
   @Get()
-  findAll(@Query('name') name: string) {
-    return this.restaurantService.findAll(name);
+  findAll() {
+    return this.restaurantService.findAll();
   }
 
   @Public()

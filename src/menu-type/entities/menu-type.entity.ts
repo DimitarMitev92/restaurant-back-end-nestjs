@@ -8,15 +8,12 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Address {
+export class MenuType {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  address: string;
-
-  @Column({ name: 'user_id' })
-  userId: string;
+  type: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

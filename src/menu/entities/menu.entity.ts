@@ -7,19 +7,13 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum Type {
-  VEGAN = 'VEGAN',
-  GLUTEN_FREE = 'GLUTEN_FREE',
-  MAIN_MENU = 'MAIN_MENU',
-  LUNCH_MENU = 'LUNCH_MENU',
-}
 @Entity()
 export class Menu {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'enum', enum: Type })
-  type: string;
+  @Column({ name: 'menu_type_id' })
+  menuTypeId: string;
 
   @Column({ name: 'restaurant_id' })
   restaurantId: string;

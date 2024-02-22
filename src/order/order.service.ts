@@ -74,7 +74,6 @@ export class OrderService {
         await transactionEntityManager.save(orderDetails);
 
         finalPrice = parseFloat(finalPrice.toFixed(2));
-    
 
         const orderResponse = {
           clientId: order.clientId,

@@ -75,8 +75,9 @@ export class MealService {
     const [hours, minutes] = time.split(':').map(Number);
     return hours * 60 + minutes;
   }
-  findAll(name: string) {
-    return this.mealRepo.find({ where: { name } });
+
+  findAll() {
+    return this.mealRepo.find();
   }
 
   async findOne(id: string): Promise<Meal> {

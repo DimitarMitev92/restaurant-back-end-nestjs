@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
@@ -33,8 +32,8 @@ export class LocationController {
 
   @Public()
   @Get()
-  findAll(@Query('name') name: string) {
-    return this.locationService.findAll(name);
+  findAll() {
+    return this.locationService.findAll();
   }
 
   @Public()

@@ -2,7 +2,6 @@ import {
   MigrationInterface,
   QueryRunner,
   Table,
-  TableIndex,
   TableForeignKey,
 } from 'typeorm';
 
@@ -87,14 +86,6 @@ export class Meal1708026131991 implements MigrationInterface {
       true,
     );
 
-    await queryRunner.createIndex(
-      'meal',
-      new TableIndex({
-        name: 'IDX_MEAL_NAME',
-        columnNames: ['name'],
-      }),
-    );
-
     await queryRunner.createForeignKey(
       'meal',
       new TableForeignKey({
@@ -127,7 +118,6 @@ export class Meal1708026131991 implements MigrationInterface {
     await queryRunner.dropForeignKey('meal', 'menu_id');
     await queryRunner.dropForeignKey('meal', 'category_id');
     await queryRunner.dropForeignKey('meal', 'package_id');
-    await queryRunner.dropIndex('meal', 'IDX_MEAL_NAME');
     await queryRunner.dropTable('meal');
   }
 }

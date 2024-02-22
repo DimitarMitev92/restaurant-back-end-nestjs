@@ -29,8 +29,8 @@ export class RestaurantService {
     return this.restaurantRepo.save(newRestaurant);
   }
 
-  async findAll(name: string) {
-    return this.restaurantRepo.find({ where: { name } });
+  async findAll() {
+    return this.restaurantRepo.find();
   }
 
   async findOne(id: string): Promise<Restaurant> {

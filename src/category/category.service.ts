@@ -28,8 +28,8 @@ export class CategoryService {
     return this.categoryRepo.save(newCategory);
   }
 
-  async findAll(type: string) {
-    return this.categoryRepo.find({ where: { type } });
+  async findAll() {
+    return this.categoryRepo.find();
   }
 
   async findOne(id: string): Promise<Category> {
