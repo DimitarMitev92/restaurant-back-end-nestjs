@@ -37,6 +37,16 @@ export class MealController {
   }
 
   @Public()
+  @Get('/:restaurantId')
+  async findMealsByRestaurantId(@Param('restaurantId') restaurantId: string) {
+    try {
+      return await this.mealService.findMealsByRestaurantId(restaurantId);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  @Public()
   @Get()
   findAll() {
     return this.mealService.findAll();
