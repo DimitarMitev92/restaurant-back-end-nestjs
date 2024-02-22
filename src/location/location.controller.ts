@@ -24,7 +24,7 @@ export class LocationController {
   constructor(private readonly locationService: LocationService) {}
 
   @Public()
-  @Post('create')
+  @Post('/create')
   async create(@Body() createLocationDto: CreateLocationDto) {
     const location = await this.locationService.create(createLocationDto);
     return location;
@@ -37,7 +37,7 @@ export class LocationController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const location = await this.locationService.findOne(id);
     if (!location) {

@@ -24,13 +24,13 @@ export class MealController {
   constructor(private readonly mealService: MealService) {}
 
   @Public()
-  @Get('newest')
+  @Get('/newest')
   getNewestMeals() {
     return this.mealService.getNewestMeals();
   }
 
   @Roles([UserRights.ADMIN])
-  @Post('create')
+  @Post('/create')
   async create(@Body() createMealDto: CreateMealDto) {
     const meal = await this.mealService.create(createMealDto);
     return meal;
@@ -43,7 +43,7 @@ export class MealController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const meal = await this.mealService.findOne(id);
     if (!meal) {

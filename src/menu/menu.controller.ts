@@ -24,7 +24,7 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Roles([UserRights.ADMIN])
-  @Post('create')
+  @Post('/create')
   async create(@Body() createMenuDto: CreateMenuDto) {
     const menu = await this.menuService.create(createMenuDto);
     return menu;
@@ -37,7 +37,7 @@ export class MenuController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const menu = await this.menuService.findOne(id);
     if (!menu) {

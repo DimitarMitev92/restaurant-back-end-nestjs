@@ -24,7 +24,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Roles([UserRights.ADMIN])
-  @Post('create')
+  @Post('/create')
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     const category = await this.categoryService.create(createCategoryDto);
     return category;
@@ -37,7 +37,7 @@ export class CategoryController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const category = await this.categoryService.findOne(id);
     if (!category) {

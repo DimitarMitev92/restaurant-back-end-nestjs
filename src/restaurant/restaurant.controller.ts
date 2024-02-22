@@ -24,7 +24,7 @@ export class RestaurantController {
   constructor(private readonly restaurantService: RestaurantService) {}
 
   @Roles([UserRights.ADMIN])
-  @Post('create')
+  @Post('/create')
   async create(@Body() createRestaurantDto: CreateRestaurantDto) {
     const restaurant = await this.restaurantService.create(createRestaurantDto);
     return restaurant;
@@ -37,7 +37,7 @@ export class RestaurantController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: string) {
     const restaurant = await this.restaurantService.findOne(id);
     if (!restaurant) {
@@ -47,7 +47,7 @@ export class RestaurantController {
   }
 
   @Public()
-  @Get(':id/meals')
+  @Get('/:id/meals')
   async findMealsByRestourant(@Param('id') id: string) {
     const restaurant = await this.restaurantService.findMealsByResId(id);
     if (!restaurant) {
@@ -80,7 +80,7 @@ export class RestaurantController {
   }
 
   @Public()
-  @Get('byLocationId/:locationId')
+  @Get('/byLocationId/:locationId')
   fetchRestaurantsByLocationId(@Param('locationId') locationId: string) {
     return this.restaurantService.findRestaurantsByLocationId(locationId);
   }
