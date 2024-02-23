@@ -64,11 +64,34 @@ export class MealService {
       );
     }
 
+    const endDateObject = new Date(createMealDto.endDate);
+    const currentDate = new Date();
+    const currentHours = currentDate.getHours();
+    const currentMinutes = currentDate.getMinutes();
+    const endHourMinutes = this.convertTimeToMinutes(endHour);
+    endDateObject.setHours(0, 0, 0, 0);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const [endHours, endMinutes] = createMealDto.endHour.split(':').map(Number);
+    endDateObject.setHours(endHours, endMinutes, 0, 0);
+
+    if (endDateObject < currentDate) {
+      throw new BadRequestException(
+        'End date and time cannot be before the current date and time',
+      );
+    } else if (endDateObject.toDateString() === currentDate.toDateString()) {
+      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+      if (endHourMinutes <= currentTimeInMinutes) {
+        throw new BadRequestException(
+          'End time cannot be in the past on the current day',
+        );
+      }
+    }
+
     if (startDate > endDate) {
       throw new BadRequestException('Start date must be on or before end date');
     }
     const startHourMinutes = this.convertTimeToMinutes(startHour);
-    const endHourMinutes = this.convertTimeToMinutes(endHour);
 
     if (startHourMinutes >= endHourMinutes) {
       throw new BadRequestException('Start hour must be before end hour');
@@ -174,6 +197,39 @@ export class MealService {
     return newestMeals;
   }
 
+  private isMealAvailable(
+    meal: Meal,
+    currentDate: Date,
+    currentTimeInMinutes: number,
+  ) {
+    const startDate = new Date(meal.startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(meal.endDate);
+    endDate.setHours(0, 0, 0, 0);
+    const [startHours, startMinutes] = meal.startHour.split(':').map(Number);
+    const startHourInMinutes = startHours * 60 + startMinutes;
+    const [endHours, endMinutes] = meal.endHour.split(':').map(Number);
+    const endHourInMinutes = endHours * 60 + endMinutes;
+
+    if (currentDate < startDate || currentDate > endDate) {
+      return false;
+    }
+
+    if (
+      currentDate.getTime() === startDate.getTime() ||
+      currentDate.getTime() === endDate.getTime()
+    ) {
+      if (
+        currentTimeInMinutes < startHourInMinutes ||
+        currentTimeInMinutes > endHourInMinutes
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   async findMealsByRestaurantId(restaurantId: string) {
     const restaurant = await this.entityManager
       .getRepository(Restaurant)
@@ -220,6 +276,13 @@ export class MealService {
       .where('menuType.id IN (:...menuTypeIds)', { menuTypeIds })
       .getMany();
 
+    menuTypes.forEach((menuType) => console.log(menuType.type));
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const currentHours = new Date().getHours();
+    const currentMinutes = new Date().getMinutes();
+    const currentTimeInMinutes = currentHours * 60 + currentMinutes;
     const response = {
       restaurant: restaurant.name,
       menus: menus.map((menu) => {
@@ -231,6 +294,9 @@ export class MealService {
           type: menuType,
           meals: meals
             .filter((meal) => meal.menuId === menu.id)
+            .filter((meal) =>
+              this.isMealAvailable(meal, currentDate, currentTimeInMinutes),
+            )
             .map((meal) => ({
               id: meal.id,
               name: meal.name,
