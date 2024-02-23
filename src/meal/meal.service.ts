@@ -283,7 +283,6 @@ export class MealService {
     const currentHours = new Date().getHours();
     const currentMinutes = new Date().getMinutes();
     const currentTimeInMinutes = currentHours * 60 + currentMinutes;
-
     const response = {
       restaurant: restaurant.name,
       menus: menus.map((menu) => {

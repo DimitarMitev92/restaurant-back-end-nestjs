@@ -43,12 +43,14 @@ export class AddressService {
     return address;
   }
 
-  async findOneByUserId(userId: string) {
-    const address = await this.addressRepo.findOneBy({ userId: userId });
-    if (!address) {
-      throw new NotFoundException(`User don't have an address.`);
+  async findAllAddressesByUserId(userId: string) {
+    const addresses = await this.addressRepo.find({
+      where: { userId: userId },
+    });
+    if (!addresses || addresses.length === 0) {
+      throw new NotFoundException(`User doesn't have an address.`);
     }
-    return address;
+    return addresses;
   }
 
   async update(id: string, updateAddressDto: UpdateAddressDto) {
