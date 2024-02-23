@@ -42,8 +42,8 @@ export class AddressController {
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Get('user/:userId')
-  findOneByUserId(@Param('userId') userId: string) {
-    return this.addressService.findOneByUserId(userId);
+  findAllByUserId(@Param('userId') userId: string) {
+    return this.addressService.findAllAddressesByUserId(userId);
   }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])

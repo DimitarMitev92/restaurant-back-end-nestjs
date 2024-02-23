@@ -220,8 +220,6 @@ export class MealService {
       .where('menuType.id IN (:...menuTypeIds)', { menuTypeIds })
       .getMany();
 
-    menuTypes.forEach((menuType) => console.log(menuType.type));
-
     const response = {
       restaurant: restaurant.name,
       menus: menus.map((menu) => {
