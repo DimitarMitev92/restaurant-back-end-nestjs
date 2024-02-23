@@ -197,6 +197,39 @@ export class MealService {
     return newestMeals;
   }
 
+  private isMealAvailable(
+    meal: Meal,
+    currentDate: Date,
+    currentTimeInMinutes: number,
+  ) {
+    const startDate = new Date(meal.startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(meal.endDate);
+    endDate.setHours(0, 0, 0, 0);
+    const [startHours, startMinutes] = meal.startHour.split(':').map(Number);
+    const startHourInMinutes = startHours * 60 + startMinutes;
+    const [endHours, endMinutes] = meal.endHour.split(':').map(Number);
+    const endHourInMinutes = endHours * 60 + endMinutes;
+
+    if (currentDate < startDate || currentDate > endDate) {
+      return false;
+    }
+
+    if (
+      currentDate.getTime() === startDate.getTime() ||
+      currentDate.getTime() === endDate.getTime()
+    ) {
+      if (
+        currentTimeInMinutes < startHourInMinutes ||
+        currentTimeInMinutes > endHourInMinutes
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   async findMealsByRestaurantId(restaurantId: string) {
     const restaurant = await this.entityManager
       .getRepository(Restaurant)
@@ -245,6 +278,12 @@ export class MealService {
 
     menuTypes.forEach((menuType) => console.log(menuType.type));
 
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    const currentHours = new Date().getHours();
+    const currentMinutes = new Date().getMinutes();
+    const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
     const response = {
       restaurant: restaurant.name,
       menus: menus.map((menu) => {
@@ -256,6 +295,9 @@ export class MealService {
           type: menuType,
           meals: meals
             .filter((meal) => meal.menuId === menu.id)
+            .filter((meal) =>
+              this.isMealAvailable(meal, currentDate, currentTimeInMinutes),
+            )
             .map((meal) => ({
               id: meal.id,
               name: meal.name,
