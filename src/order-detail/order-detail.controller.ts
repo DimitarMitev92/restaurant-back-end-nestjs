@@ -31,6 +31,13 @@ export class OrderDetailController {
     }
   }
 
+  @Public()
+  @Get('/bill/:clientId')
+  async getOrderPerClient(@Param('clientId') clientId: string) {
+    const result = await this.orderDetailService.getClientBill(clientId);
+    return result;
+  }
+
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Get()
   async findAll() {
