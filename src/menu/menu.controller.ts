@@ -8,6 +8,8 @@ import {
   Delete,
   ParseUUIDPipe,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
@@ -64,5 +66,23 @@ export class MenuController {
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
     console.log(`Attempting permanent removal for menu with id :${id}`);
     return this.menuService.removePermanent(id);
+  }
+
+  @Public()
+  @Get('/restaurant/:restaurantId')
+  fetchMenuByRestaurantId(@Param('restaurantId') restaurantId: string) {
+    return this.menuService.fetchMenuByRestaurantId(restaurantId);
+  }
+
+  @Public()
+  @Get('/fetch-restaurant/:menuId')
+  async fetchRestaurantIdByMenuId(@Param('menuId') menuId: string) {
+    try {
+      const restaurantId =
+        await this.menuService.fetchRestaurantIdByMenuId(menuId);
+      return { restaurantId };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+    }
   }
 }
