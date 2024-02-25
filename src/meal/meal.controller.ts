@@ -36,6 +36,18 @@ export class MealController {
     return meal;
   }
 
+  // @Get('/restaurant/:restaurantId/menu/:menuId')
+  // async findMealsByMenuId(
+  //   @Param('restaurantId') restaurantId: string,
+  //   @Param('menuId') menuId: string,
+  // ) {
+  //   try {
+  //     return await this.mealService.findMealsByMenuId(menuId, restaurantId);
+  //   } catch (error) {
+  //     throw new NotFoundException(error.message);
+  //   }
+  // }
+
   @Public()
   @Get('/:restaurantId')
   async findMealsByRestaurantId(@Param('restaurantId') restaurantId: string) {
