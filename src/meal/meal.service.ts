@@ -14,6 +14,8 @@ import { PackageService } from 'src/package/package.service';
 import { Menu } from 'src/menu/entities/menu.entity';
 import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
 import { MenuType } from 'src/menu-type/entities/menu-type.entity';
+import moment from 'moment-timezone';
+
 @Injectable()
 export class MealService {
   constructor(
@@ -64,44 +66,37 @@ export class MealService {
       );
     }
 
-    const endDateObject = new Date(createMealDto.endDate);
-    const currentDate = new Date();
-    const currentHours = currentDate.getHours();
-    const currentMinutes = currentDate.getMinutes();
-    const endHourMinutes = this.convertTimeToMinutes(endHour);
-    endDateObject.setHours(0, 0, 0, 0);
-    currentDate.setHours(0, 0, 0, 0);
+    const currentDateTime = moment();
+    moment.tz.setDefault('Europe/Sofia');
 
-    const [endHours, endMinutes] = createMealDto.endHour.split(':').map(Number);
-    endDateObject.setHours(endHours, endMinutes, 0, 0);
+    const startDateTime = moment(
+      startDate + ' ' + startHour,
+      'YYYY-MM-DD HH:mm:ss',
+    );
+    const endDateTime = moment(endDate + ' ' + endHour, 'YYYY-MM-DD HH:mm:ss');
 
-    if (endDateObject < currentDate) {
+    if (startDateTime.isAfter(endDateTime)) {
+      throw new BadRequestException(
+        'Start date and time cannot be after the end date and time',
+      );
+    }
+
+    if (endDateTime.isBefore(currentDateTime)) {
       throw new BadRequestException(
         'End date and time cannot be before the current date and time',
       );
-    } else if (endDateObject.toDateString() === currentDate.toDateString()) {
-      const currentTimeInMinutes = currentHours * 60 + currentMinutes;
-      if (endHourMinutes <= currentTimeInMinutes) {
-        throw new BadRequestException(
-          'End time cannot be in the past on the current day',
-        );
-      }
     }
 
-    if (startDate > endDate) {
+    if (moment(startDate).isAfter(moment(endDate))) {
       throw new BadRequestException('Start date must be on or before end date');
     }
-    const startHourMinutes = this.convertTimeToMinutes(startHour);
 
-    if (startHourMinutes >= endHourMinutes) {
+    if (startHour >= endHour) {
       throw new BadRequestException('Start hour must be before end hour');
     }
+
     const newMeal = this.mealRepo.create(createMealDto);
     return this.mealRepo.save(newMeal);
-  }
-  private convertTimeToMinutes(time: string): number {
-    const [hours, minutes] = time.split(':').map(Number);
-    return hours * 60 + minutes;
   }
 
   findAll() {
@@ -197,39 +192,6 @@ export class MealService {
     return newestMeals;
   }
 
-  private isMealAvailable(
-    meal: Meal,
-    currentDate: Date,
-    currentTimeInMinutes: number,
-  ) {
-    const startDate = new Date(meal.startDate);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(meal.endDate);
-    endDate.setHours(0, 0, 0, 0);
-    const [startHours, startMinutes] = meal.startHour.split(':').map(Number);
-    const startHourInMinutes = startHours * 60 + startMinutes;
-    const [endHours, endMinutes] = meal.endHour.split(':').map(Number);
-    const endHourInMinutes = endHours * 60 + endMinutes;
-
-    if (currentDate < startDate || currentDate > endDate) {
-      return false;
-    }
-
-    if (
-      currentDate.getTime() === startDate.getTime() ||
-      currentDate.getTime() === endDate.getTime()
-    ) {
-      if (
-        currentTimeInMinutes < startHourInMinutes ||
-        currentTimeInMinutes > endHourInMinutes
-      ) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   async findMealsByRestaurantId(restaurantId: string) {
     const restaurant = await this.entityManager
       .getRepository(Restaurant)
@@ -251,23 +213,33 @@ export class MealService {
       .getMany();
 
     if (menus.length === 0) {
-      throw new NotFoundException(
-        `No menus found for restaurant with ID ${restaurantId}`,
-      );
+      return { restaurant: restaurant.name, menus: [] };
     }
 
-    const menuIds = menus.map((menu) => menu.id);
+    moment.tz.setDefault('Europe/Sofia');
+    const currentDate = moment();
+
+    const currentTime = currentDate.format('HH:mm:ss');
+    const currentDateString = currentDate.format('YYYY-MM-DD');
+
+    console.log(currentDate);
+    console.log(currentTime);
+    console.log(currentDateString);
     const meals = await this.entityManager
       .getRepository(Meal)
       .createQueryBuilder('meal')
-      .where('meal.menuId IN (:...menuIds)', { menuIds })
+      .where('meal.menuId IN (:...menuIds)', {
+        menuIds: menus.map((menu) => menu.id),
+      })
+      .andWhere('meal.startDate <= :currentDate', {
+        currentDate: currentDateString,
+      })
+      .andWhere('meal.endDate >= :currentDate', {
+        currentDate: currentDateString,
+      })
+      .andWhere('meal.startHour <= :currentTime', { currentTime: currentTime })
+      .andWhere('meal.endHour >= :currentTime', { currentTime: currentTime })
       .getMany();
-
-    if (meals.length === 0) {
-      throw new NotFoundException(
-        `No meals found for menus of restaurant with ID ${restaurantId}`,
-      );
-    }
 
     const menuTypeIds = menus.map((menu) => menu.menuTypeId);
     const menuTypes = await this.entityManager
@@ -277,12 +249,21 @@ export class MealService {
       .getMany();
 
     menuTypes.forEach((menuType) => console.log(menuType.type));
-
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-    const currentHours = new Date().getHours();
-    const currentMinutes = new Date().getMinutes();
-    const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+    if (meals.length === 0) {
+      return {
+        restaurant: restaurant.name,
+        menus: menus.map((menu) => {
+          const menuType = menuTypes.find(
+            (type) => type.id === menu.menuTypeId,
+          );
+          return {
+            id: menu.id,
+            type: menuType ? menuType.type : 'Unknown',
+            meals: [],
+          };
+        }),
+      };
+    }
     const response = {
       restaurant: restaurant.name,
       menus: menus.map((menu) => {
@@ -294,9 +275,6 @@ export class MealService {
           type: menuType,
           meals: meals
             .filter((meal) => meal.menuId === menu.id)
-            .filter((meal) =>
-              this.isMealAvailable(meal, currentDate, currentTimeInMinutes),
-            )
             .map((meal) => ({
               id: meal.id,
               name: meal.name,
@@ -316,5 +294,60 @@ export class MealService {
     };
 
     return response;
+  }
+
+  async findMealsByMenuId(
+    menuId: string,
+    restaurantId: string,
+  ): Promise<{
+    menu: { id: string; menuTypeId: string; menuType: string; meals: Meal[] };
+  }> {
+    const menu = await this.entityManager
+      .getRepository(Menu)
+      .createQueryBuilder('menu')
+      .where('menu.id = :menuId', { menuId })
+      .andWhere('menu.restaurantId = :restaurantId', { restaurantId })
+      .getOne();
+
+    if (!menu) {
+      throw new NotFoundException(`Menu with ID ${menuId} not found`);
+    }
+
+    if (menu.restaurantId !== restaurantId) {
+      throw new NotFoundException(
+        `Menu with ID ${menuId} is not associated with restaurant ID ${restaurantId}`,
+      );
+    }
+
+    const menuType = await this.entityManager
+      .getRepository(MenuType)
+      .createQueryBuilder('menuType')
+      .where('menuType.id = :menuTypeId', { menuTypeId: menu.menuTypeId })
+      .getOne();
+
+    if (!menuType) {
+      throw new NotFoundException(
+        `MenuType with ID ${menu.menuTypeId} not found`,
+      );
+    }
+
+    const meals = await this.entityManager
+      .getRepository(Meal)
+      .createQueryBuilder('meal')
+      .where('meal.menuId = :menuId', { menuId })
+      .getMany();
+
+    if (meals.length === 0) {
+      throw new NotFoundException(`No meals found for menu with ID ${menuId}`);
+    }
+
+    return {
+      menu: {
+        id: menu.id,
+        menuTypeId: menu.menuTypeId,
+        menuType: menuType.type,
+        meals: meals,
+      },
+    };
   }
 }

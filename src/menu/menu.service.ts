@@ -105,4 +105,34 @@ export class MenuService {
       message: `Permanent delete menu successful with id ${id}`,
     };
   }
+  async fetchMenuByRestaurantId(restaurantId: string) {
+    const restaurantExists = await this.restaurantService.findOne(restaurantId);
+    if (!restaurantExists) {
+      throw new NotFoundException(
+        `Restaurant with ID ${restaurantId} not found`,
+      );
+    }
+
+    const menus = await this.menuRepo
+      .createQueryBuilder('menu')
+      .where('menu.restaurantId = :restaurantId', { restaurantId })
+      .innerJoin('MenuType', 'menuType', 'menu.menuTypeId = menuType.id')
+      .select([
+        'menu.id AS id',
+        'menu.restaurantId AS restaurantId',
+        'menuType.type AS menuTypeValue',
+      ])
+      .getRawMany();
+
+    return menus;
+  }
+
+  async fetchRestaurantIdByMenuId(menuId: string): Promise<string> {
+    const menu = await this.menuRepo.findOne({ where: { id: menuId } });
+    if (!menu) {
+      throw new NotFoundException(`Menu with ID ${menuId} not found`);
+    }
+    return menu.restaurantId;
+  }
+  
 }
