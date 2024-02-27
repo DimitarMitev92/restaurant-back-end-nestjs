@@ -97,23 +97,25 @@ export class OrderDetailService {
 
   async getMostOrderedMeal() {
     const query = await this.orderDetailRepository
-      .createQueryBuilder('od')
-      .select('meal.id', 'meal_id')
-      .addSelect('meal.name', 'meal_name')
-      .addSelect('restaurant.name', 'restaurant_name')
-      .addSelect('COUNT(od.meal_id)', 'order_count')
-      .innerJoin(Meal, 'meal', '"meal"."id" = "od"."meal_id"')
-      .innerJoin(Menu, 'menu', '"menu"."id" = "meal"."menu_id"')
+      .createQueryBuilder('order_detail')
+      .select([
+        'meal.id AS meal_id',
+        'meal.name AS meal_name',
+        'restaurant.id AS restaurant_id',
+        'restaurant.name AS restaurant_name',
+        'SUM(order_detail.count) AS total_meal_count', // Summing the count column
+      ])
+      .innerJoin('meal', 'meal', 'meal.id = order_detail.meal_id')
+      .innerJoin('menu', 'menu', 'menu.id = meal.menu_id')
       .innerJoin(
-        Restaurant,
         'restaurant',
-        '"restaurant"."id" = "menu"."restaurant_id"',
+        'restaurant',
+        'restaurant.id = menu.restaurant_id',
       )
-      .groupBy('meal.id, meal.name, restaurant.name')
-      .orderBy('order_count', 'DESC')
-      .limit(1);
+      .groupBy('meal.id, meal.name, restaurant.name, restaurant.id')
+      .orderBy('total_meal_count', 'DESC');
 
-    return query;
+    return query.getRawMany();
   }
 
   async getClientBill(clientId: string) {
