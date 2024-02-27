@@ -113,9 +113,11 @@ export class OrderDetailService {
         'restaurant.id = menu.restaurant_id',
       )
       .groupBy('meal.id, meal.name, restaurant.name, restaurant.id')
-      .orderBy('total_meal_count', 'DESC');
+      .orderBy('total_meal_count', 'DESC')
+      .limit(4)
+      .getRawMany();
 
-    return query.getRawMany();
+    return query;
   }
 
   async getClientBill(clientId: string) {
