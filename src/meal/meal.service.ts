@@ -1,3 +1,4 @@
+import { RestaurantService } from './../restaurant/restaurant.service';
 import {
   BadRequestException,
   Injectable,
@@ -7,7 +8,7 @@ import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Meal } from './entities/meal.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { MenuService } from 'src/menu/menu.service';
 import { CategoryService } from 'src/category/category.service';
 import { PackageService } from 'src/package/package.service';
@@ -23,6 +24,7 @@ export class MealService {
     private readonly menuService: MenuService,
     private readonly categoryService: CategoryService,
     private readonly packageService: PackageService,
+    private readonly restaurantService: RestaurantService,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
   ) {}
@@ -346,4 +348,27 @@ export class MealService {
       },
     };
   }
+
+  async removeMealsByMenuId(menuId: string) {
+    const meals = await this.mealRepo.find({
+      where: { menuId },
+    });
+    return this.mealRepo.softRemove(meals);
+  }
+
+  async removeMealsByMenuIds(menuIds: string[]) {
+    const meals = await this.mealRepo.find({
+      where: { menuId: In(menuIds) },
+    });
+    return this.mealRepo.softRemove(meals);
+  }
+
+  // async deleteRestaurantAndAssociations(restaurantId: string) {
+  //   await this.restaurantService.removeSoft(restaurantId);
+  //   const menus =
+  //     await this.menuService.removeMenusByRestaurantId(restaurantId);
+
+  //   const menuIds = menus.menus.map((menu) => menu.id);
+  //   await this.removeMealsByMenuIds(menuIds);
+  // }
 }
