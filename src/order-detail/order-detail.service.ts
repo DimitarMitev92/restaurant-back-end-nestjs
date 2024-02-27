@@ -139,7 +139,7 @@ export class OrderDetailService {
       .innerJoin(Restaurant, 'r', '"r"."id" = "mn"."restaurant_id"')
       .innerJoin(Order, 'o', '"od"."order_id" = "o"."id"')
       .where('o.client_id = :clientId', { clientId })
-      .getRawMany();
+      .limit(4);
 
     return query;
   }
