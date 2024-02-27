@@ -87,10 +87,32 @@ export class MealController {
     return this.mealService.removeSoft(id);
   }
 
-  @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for menu with id :${id}`);
+    console.log(`Attempting permanent removal for meal with id :${id}`);
     return this.mealService.removePermanent(id);
   }
+
+  @Roles([UserRights.ADMIN])
+  @Delete('/by-menuId/:menuId')
+  removeMealsByMenuId(@Param('menuId', ParseUUIDPipe) menuId: string) {
+    console.log(`Attempting soft removal for meals with menuId:${menuId}`);
+    return this.mealService.removeMealsByMenuId(menuId);
+  }
+  // @Roles([UserRights.ADMIN])
+  // @Delete('/delete-restaurant-and-all/:restaurantId')
+  // async deleteRestaurantWithMenusAndMeals(
+  //   @Param('restaurantId') restaurantId: string,
+  // ) {
+  //   try {
+  //     await this.mealService.deleteRestaurantAndAssociations(restaurantId);
+  //     return {
+  //       message: `Successfully deleted restaurant with ID:${restaurantId} and all associated entities.`,
+  //     };
+  //   } catch (error) {
+  //     throw new Error(
+  //       `Error deleting restaurant with ID:${restaurantId}: ${error.message}`,
+  //     );
+  //   }
+  // }
 }

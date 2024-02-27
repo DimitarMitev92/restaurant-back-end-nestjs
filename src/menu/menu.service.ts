@@ -134,5 +134,22 @@ export class MenuService {
     }
     return menu.restaurantId;
   }
-  
+  async removeMenusByRestaurantId(restaurantId: string) {
+    const menus = await this.menuRepo.find({ where: { restaurantId } });
+    if (!menus) {
+      throw new NotFoundException('Menus not found');
+    }
+    await this.menuRepo.softRemove(menus);
+    return {
+      menus,
+      success: true,
+      message: `Soft delete menus successful with restaurant id ${restaurantId}`,
+    };
+  }
+
+  async findAllMenusByRestaurantId(restaurantId: string): Promise<Menu[]> {
+    return this.menuRepo.find({
+      where: { restaurantId: restaurantId },
+    });
+  }
 }
