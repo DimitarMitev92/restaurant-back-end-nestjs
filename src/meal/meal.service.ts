@@ -222,9 +222,6 @@ export class MealService {
     const currentTime = currentDate.format('HH:mm:ss');
     const currentDateString = currentDate.format('YYYY-MM-DD');
 
-    console.log(currentDate);
-    console.log(currentTime);
-    console.log(currentDateString);
     const meals = await this.entityManager
       .getRepository(Meal)
       .createQueryBuilder('meal')
@@ -248,7 +245,6 @@ export class MealService {
       .where('menuType.id IN (:...menuTypeIds)', { menuTypeIds })
       .getMany();
 
-    menuTypes.forEach((menuType) => console.log(menuType.type));
     if (meals.length === 0) {
       return {
         restaurant: restaurant.name,

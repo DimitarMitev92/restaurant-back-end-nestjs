@@ -11,7 +11,6 @@ import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-console.log(process.env.PORT);
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
