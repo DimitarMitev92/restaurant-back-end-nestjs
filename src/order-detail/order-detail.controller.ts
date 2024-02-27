@@ -22,7 +22,7 @@ export class OrderDetailController {
     try {
       const mostOrderedMeal =
         await this.orderDetailService.getMostOrderedMeal();
-      return { mostOrderedMeal };
+      return mostOrderedMeal;
     } catch (error) {
       console.error('Error fetching most ordered meal:', error);
       throw new NotFoundException(
