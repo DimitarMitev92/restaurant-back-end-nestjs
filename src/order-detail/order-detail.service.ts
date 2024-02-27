@@ -3,9 +3,9 @@ import {
   CreateOrderDetailDto,
   MealDetailDto,
 } from './dto/create-order-detail.dto';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { OrderDetail } from './entities/order-detail.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
 import { Meal } from 'src/meal/entities/meal.entity';
 import { Menu } from 'src/menu/entities/menu.entity';
@@ -16,6 +16,8 @@ export class OrderDetailService {
   constructor(
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   async create(createOrderDetailDto: CreateOrderDetailDto, orderId: string) {
@@ -96,14 +98,15 @@ export class OrderDetailService {
   }
 
   async getMostOrderedMeal() {
-    const query = await this.orderDetailRepository
+    const query = await this.entityManager
+      .getRepository(OrderDetail)
       .createQueryBuilder('order_detail')
       .select([
         'meal.id AS meal_id',
         'meal.name AS meal_name',
         'restaurant.id AS restaurant_id',
         'restaurant.name AS restaurant_name',
-        'SUM(order_detail.count) AS total_meal_count', // Summing the count column
+        'SUM(order_detail.count) AS total_meal_count',
       ])
       .innerJoin('meal', 'meal', 'meal.id = order_detail.meal_id')
       .innerJoin('menu', 'menu', 'menu.id = meal.menu_id')
@@ -141,7 +144,7 @@ export class OrderDetailService {
       .innerJoin(Restaurant, 'r', '"r"."id" = "mn"."restaurant_id"')
       .innerJoin(Order, 'o', '"od"."order_id" = "o"."id"')
       .where('o.client_id = :clientId', { clientId })
-      .limit(4);
+      .getRawMany();
 
     return query;
   }
