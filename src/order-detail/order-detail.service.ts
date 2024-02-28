@@ -104,6 +104,7 @@ export class OrderDetailService {
       .select([
         'meal.id AS meal_id',
         'meal.name AS meal_name',
+        'meal.picture as meal_picture',
         'restaurant.id AS restaurant_id',
         'restaurant.name AS restaurant_name',
         'SUM(order_detail.count) AS total_meal_count',
@@ -115,7 +116,9 @@ export class OrderDetailService {
         'restaurant',
         'restaurant.id = menu.restaurant_id',
       )
-      .groupBy('meal.id, meal.name, restaurant.name, restaurant.id')
+      .groupBy(
+        'meal.id, meal.name, meal.picture, restaurant.name, restaurant.id',
+      )
       .orderBy('total_meal_count', 'DESC')
       .limit(4)
       .getRawMany();
