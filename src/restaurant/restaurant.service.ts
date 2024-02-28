@@ -114,6 +114,14 @@ export class RestaurantService {
     if (!restaurant) {
       throw new NotFoundException(`Restaurant with ID ${id} not found`);
     }
+
+    const existingRestaurant = await this.restaurantRepo.findOne({
+      where: { name: updateRestaurantDto.name },
+    });
+
+    if (existingRestaurant) {
+      throw new BadRequestException('Restaurant with this name already exists');
+    }
     const updatedRestaurant = { ...restaurant, ...updateRestaurantDto };
 
     return this.restaurantRepo.save(updatedRestaurant);
