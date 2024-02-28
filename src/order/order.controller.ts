@@ -49,6 +49,13 @@ export class OrderController {
     return order;
   }
 
+  @Roles([UserRights.ADMIN, UserRights.CLIENT])
+  @Get('/client/:clientId')
+  async findAllOrdersByClientId(@Param('clientId') clientId: string) {
+    const orders = await this.orderService.findAllOrdersByClientId(clientId);
+    return orders;
+  }
+
   @Roles([UserRights.ADMIN])
   @Patch(':id')
   update(

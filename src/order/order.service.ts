@@ -110,6 +110,14 @@ export class OrderService {
     return order;
   }
 
+  async findAllOrdersByClientId(clientId: string) {
+    const orders = await this.orderRepository.find({
+      where: { clientId: clientId },
+    });
+
+    return orders;
+  }
+
   async update(
     id: string,
     updateOrderDto: UpdateOrderDto,
