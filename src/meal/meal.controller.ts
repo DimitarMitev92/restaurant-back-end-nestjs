@@ -36,18 +36,6 @@ export class MealController {
     return meal;
   }
 
-  // @Get('/restaurant/:restaurantId/menu/:menuId')
-  // async findMealsByMenuId(
-  //   @Param('restaurantId') restaurantId: string,
-  //   @Param('menuId') menuId: string,
-  // ) {
-  //   try {
-  //     return await this.mealService.findMealsByMenuId(menuId, restaurantId);
-  //   } catch (error) {
-  //     throw new NotFoundException(error.message);
-  //   }
-  // }
-
   @Public()
   @Get('/restaurant/:restaurantId')
   async findMealsByRestaurantId(@Param('restaurantId') restaurantId: string) {
@@ -83,36 +71,17 @@ export class MealController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for meal with id:${id}`);
     return this.mealService.removeSoft(id);
   }
 
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for meal with id :${id}`);
     return this.mealService.removePermanent(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete('/by-menuId/:menuId')
   removeMealsByMenuId(@Param('menuId', ParseUUIDPipe) menuId: string) {
-    console.log(`Attempting soft removal for meals with menuId:${menuId}`);
     return this.mealService.removeMealsByMenuId(menuId);
   }
-  // @Roles([UserRights.ADMIN])
-  // @Delete('/delete-restaurant-and-all/:restaurantId')
-  // async deleteRestaurantWithMenusAndMeals(
-  //   @Param('restaurantId') restaurantId: string,
-  // ) {
-  //   try {
-  //     await this.mealService.deleteRestaurantAndAssociations(restaurantId);
-  //     return {
-  //       message: `Successfully deleted restaurant with ID:${restaurantId} and all associated entities.`,
-  //     };
-  //   } catch (error) {
-  //     throw new Error(
-  //       `Error deleting restaurant with ID:${restaurantId}: ${error.message}`,
-  //     );
-  //   }
-  // }
 }

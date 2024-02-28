@@ -57,14 +57,12 @@ export class MenuController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for menu with id:${id}`);
     return this.menuService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for menu with id :${id}`);
     return this.menuService.removePermanent(id);
   }
 
