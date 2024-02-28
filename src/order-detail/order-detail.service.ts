@@ -3,9 +3,9 @@ import {
   CreateOrderDetailDto,
   MealDetailDto,
 } from './dto/create-order-detail.dto';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { OrderDetail } from './entities/order-detail.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
 import { Meal } from 'src/meal/entities/meal.entity';
 import { Menu } from 'src/menu/entities/menu.entity';
@@ -16,6 +16,8 @@ export class OrderDetailService {
   constructor(
     @InjectRepository(OrderDetail)
     private readonly orderDetailRepository: Repository<OrderDetail>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   async create(createOrderDetailDto: CreateOrderDetailDto, orderId: string) {
@@ -96,14 +98,16 @@ export class OrderDetailService {
   }
 
   async getMostOrderedMeal() {
-    const query = await this.orderDetailRepository
+    const query = await this.entityManager
+      .getRepository(OrderDetail)
       .createQueryBuilder('order_detail')
       .select([
         'meal.id AS meal_id',
         'meal.name AS meal_name',
+        'meal.picture as meal_picture',
         'restaurant.id AS restaurant_id',
         'restaurant.name AS restaurant_name',
-        'SUM(order_detail.count) AS total_meal_count', // Summing the count column
+        'SUM(order_detail.count) AS total_meal_count',
       ])
       .innerJoin('meal', 'meal', 'meal.id = order_detail.meal_id')
       .innerJoin('menu', 'menu', 'menu.id = meal.menu_id')
@@ -112,10 +116,14 @@ export class OrderDetailService {
         'restaurant',
         'restaurant.id = menu.restaurant_id',
       )
-      .groupBy('meal.id, meal.name, restaurant.name, restaurant.id')
-      .orderBy('total_meal_count', 'DESC');
+      .groupBy(
+        'meal.id, meal.name, meal.picture, restaurant.name, restaurant.id',
+      )
+      .orderBy('total_meal_count', 'DESC')
+      .limit(4)
+      .getRawMany();
 
-    return query.getRawMany();
+    return query;
   }
 
   async getClientBill(clientId: string) {
