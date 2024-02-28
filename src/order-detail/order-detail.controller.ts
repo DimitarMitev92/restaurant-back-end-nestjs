@@ -45,6 +45,12 @@ export class OrderDetailController {
   }
 
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
+  @Get('/order/:orderId')
+  async findAllByOrderId(orderId: string) {
+    return await this.orderDetailService.findAllByOrderId(orderId);
+  }
+
+  @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Get('/:id')
   async findOne(@Param('id') id: string) {
     const order = await this.orderDetailService.findOne(id);
