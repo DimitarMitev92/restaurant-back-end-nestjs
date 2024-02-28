@@ -8,6 +8,7 @@ import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
 import { Repository } from 'typeorm';
+import moment from 'moment';
 
 @Injectable()
 export class RestaurantService {
@@ -23,6 +24,13 @@ export class RestaurantService {
 
     if (existingRestaurant) {
       throw new BadRequestException('Restaurant with this name already exists');
+    }
+
+    const openHour = moment(createRestaurantDto.openHour, 'HH:mm:ss');
+    const closeHour = moment(createRestaurantDto.closeHour, 'HH:mm:ss');
+
+    if (!openHour.isBefore(closeHour)) {
+      throw new BadRequestException('Open hour must be before close hour');
     }
 
     const newRestaurant = this.restaurantRepo.create(createRestaurantDto);
@@ -41,70 +49,6 @@ export class RestaurantService {
     return restaurant;
   }
 
-  async findMealsByResId(id: string) {
-    const restaurant = await this.restaurantRepo.findOneBy({ id });
-
-    //DO NOT DELETE YET!!!
-    // const queryBuilder = this.restaurantRepo.createQueryBuilder('');
-
-    // const query = await this.restaurantRepo
-    //   .createQueryBuilder('getAllMeals')
-    //   .select('menu,meal')
-    //   .from(Menu, 'menu')
-    //   .leftJoin(Meal, 'meal', 'menu.id = meal.menu_id')
-    //   .where(`menu.restaurant_id = :id`, { id: id })
-    //   .getQuery();
-    // return query;
-
-    //TO DO: Fix the query so that you don't need to do a new object structure
-    const query = `
-         SELECT menu.id AS "menuId", menu.type, meal.*
-         FROM menu
-         LEFT JOIN meal ON menu.id = meal.menu_id
-         WHERE menu.restaurant_id = '${id}'
-`;
-
-    const queryResult = await this.restaurantRepo.query(query);
-    const result = {};
-    result['restaurant'] = restaurant.name;
-    result['menus'] = [];
-    queryResult.forEach((meal) => {
-      if (!result['menus'].some((e) => e.name === meal.type)) {
-        const mealObj = {
-          name: meal.type,
-          id: meal.menuId,
-        };
-
-        const mappedResult = queryResult.filter(
-          (meal) => meal.type == mealObj.name,
-        );
-        const mealArr = mappedResult.map((meal) => {
-          if (meal.type == mealObj.name) {
-            return {
-              id: meal.id,
-              name: meal.name,
-              picture: meal.picture,
-              description: meal.description,
-              additionalNote: meal.additional_note,
-              startDate: meal.start_date,
-              endDate: meal.end_date,
-              startHour: meal.start_hour,
-              endHour: meal.end_hour,
-              price: meal.price,
-              weight: meal.weight,
-              categoryId: meal.category_id,
-              packageId: meal.package_id,
-            };
-          }
-        });
-
-        mealObj['meals'] = mealArr;
-        result['menus'].push(mealObj);
-      }
-    });
-    return result;
-  }
-
   async update(
     id: string,
     updateRestaurantDto: UpdateRestaurantDto,
@@ -115,13 +59,29 @@ export class RestaurantService {
       throw new NotFoundException(`Restaurant with ID ${id} not found`);
     }
 
-    const existingRestaurant = await this.restaurantRepo.findOne({
-      where: { name: updateRestaurantDto.name },
-    });
+    if (
+      updateRestaurantDto.name &&
+      updateRestaurantDto.name !== restaurant.name
+    ) {
+      const existingRestaurant = await this.restaurantRepo.findOne({
+        where: { name: updateRestaurantDto.name },
+      });
 
-    if (existingRestaurant) {
-      throw new BadRequestException('Restaurant with this name already exists');
+      if (existingRestaurant) {
+        throw new BadRequestException(
+          'Another restaurant with this name already exists',
+        );
+      }
     }
+    if (updateRestaurantDto.openHour && updateRestaurantDto.closeHour) {
+      const openHour = moment(updateRestaurantDto.openHour, 'HH:mm:ss');
+      const closeHour = moment(updateRestaurantDto.closeHour, 'HH:mm:ss');
+
+      if (!openHour.isBefore(closeHour)) {
+        throw new BadRequestException('Open hour must be before close hour');
+      }
+    }
+
     const updatedRestaurant = { ...restaurant, ...updateRestaurantDto };
 
     return this.restaurantRepo.save(updatedRestaurant);
