@@ -58,14 +58,12 @@ export class RestaurantController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for restaurant with id:${id}`);
     return this.restaurantService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for restaurant with id :${id}`);
     return this.restaurantService.removePermanent(id);
   }
 

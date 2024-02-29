@@ -55,14 +55,12 @@ export class AddressController {
   @Roles([UserRights.ADMIN, UserRights.CLIENT])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for address with id:${id}`);
     return this.addressService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for address with id :${id}`);
     return this.addressService.removePermanent(id);
   }
 }

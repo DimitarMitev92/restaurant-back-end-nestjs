@@ -69,14 +69,12 @@ export class OrderController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for order with id:${id}`);
     return this.orderService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for order with id :${id}`);
     return this.orderService.removePermanent(id);
   }
 }

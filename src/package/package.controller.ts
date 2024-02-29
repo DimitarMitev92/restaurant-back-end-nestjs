@@ -54,14 +54,12 @@ export class PackageController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for package with id:${id}`);
     return this.packageService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for package with id :${id}`);
     return this.packageService.removePermanent(id);
   }
 }

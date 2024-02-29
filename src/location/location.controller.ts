@@ -58,14 +58,12 @@ export class LocationController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for location with id:${id}`);
     return this.locationService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for location with id :${id}`);
     return this.locationService.removePermanent(id);
   }
 }

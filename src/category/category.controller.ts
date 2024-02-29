@@ -58,14 +58,12 @@ export class CategoryController {
   @Roles([UserRights.ADMIN])
   @Delete(':id/soft')
   removeSoft(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting soft removal for category with id:${id}`);
     return this.categoryService.removeSoft(id);
   }
 
   @Roles([UserRights.ADMIN])
   @Delete(':id/permanent')
   removePermanent(@Param('id', ParseUUIDPipe) id: string) {
-    console.log(`Attempting permanent removal for category with id :${id}`);
     return this.categoryService.removePermanent(id);
   }
 }

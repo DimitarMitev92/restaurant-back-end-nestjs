@@ -362,13 +362,4 @@ export class MealService {
     });
     return this.mealRepo.softRemove(meals);
   }
-
-  // async deleteRestaurantAndAssociations(restaurantId: string) {
-  //   await this.restaurantService.removeSoft(restaurantId);
-  //   const menus =
-  //     await this.menuService.removeMenusByRestaurantId(restaurantId);
-
-  //   const menuIds = menus.menus.map((menu) => menu.id);
-  //   await this.removeMealsByMenuIds(menuIds);
-  // }
 }
